@@ -52,7 +52,7 @@ const ViewVideo = ({ activeSport, onBack, onSelect, setSport }: any) => {
   const [searchText, setSearchText] = useState('');
 
 
-  const cricketTutorial = ['FUNDAMENTALS', 'FRONT FOOT DEFENCE', 'BACK FOOT DEFENCE', 'COVER DRIVE', 'STRAIGHT DRIVE', 'ON DRIVE', 'SQUARE DRIVE', 'SQUARE CUT', 'BACK FOOT PUNCH', 'PULL SHOT', 'HOOK SHOT', 'FLICK', 'UPPER CUT', 'LEG GLANCE', 'FLICK', 'SWEEP', 'SLOG SWEEP', 'REVERSE SWEEP', 'SCOOP'];
+  const cricketTutorial = ['FUNDAMENTALS', 'FRONT FOOT DEFENCE', 'BACK FOOT DEFENCE', 'COVER DRIVE', 'STRAIGHT DRIVE', 'ON DRIVE', 'SQUARE DRIVE', 'SQUARE CUT', 'LATE CUT', 'BACK FOOT PUNCH', 'PULL SHOT', 'HOOK SHOT', 'FLICK', 'UPPER CUT', 'LEG GLANCE',  'SWEEP', 'SLOG SWEEP', 'REVERSE SWEEP', 'SCOOP'];
   const badmintonTutorial = ['SMASH', 'CLEAR', 'DROP', 'NET SHOT'];
 
   const baseTechniques = activeSport === 'cricket' ? cricketTutorial : badmintonTutorial;
