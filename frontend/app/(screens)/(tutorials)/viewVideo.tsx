@@ -22,11 +22,13 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingBottom: 140, //extra space for the last item to be fully visible 
   },
+  //list left triangleleft
   contenttriangleLeft: {
     width: 0, height: 0, backgroundColor: 'transparent', borderStyle: 'solid',
     borderTopWidth: 26, borderBottomWidth: 26, borderRightWidth: 16,
     borderTopColor: 'transparent', borderBottomColor: 'transparent',
   },
+  //list right triangle
   contenttriangleRight: {
     width: 0, height: 0, backgroundColor: 'transparent', borderStyle: 'solid',
     borderTopWidth: 26, borderBottomWidth: 26, borderLeftWidth: 16,
@@ -36,7 +38,7 @@ const styles = StyleSheet.create({
 });
 
 
-
+//tab button
 const TabButton = ({ label, isActive, onPress }: TabButtonProps) => (
   <Pressable onPress={onPress} className="flex-row items-center">
     <View style={styles.triangleLeft} className={isActive ? 'border-r-accent-yellow' : 'border-r-neutral-50'} />
@@ -53,9 +55,9 @@ const ViewVideo = ({ activeSport, onBack, onSelect, setSport, onSelectFundamenta
   const [isSearching, setIsSearching] = useState(false);
   const [searchText, setSearchText] = useState('');
 
-
+  //Technique list
   const cricketTutorial = ['FUNDAMENTALS', 'FRONT FOOT DEFENCE', 'BACK FOOT DEFENCE', 'COVER DRIVE', 'STRAIGHT DRIVE', 'ON DRIVE', 'SQUARE DRIVE', 'SQUARE CUT', 'LATE CUT', 'BACK FOOT PUNCH', 'PULL SHOT', 'HOOK SHOT', 'RAMP', 'FLICK SHOT', 'UPPER CUT', 'LEG GLANCE',  'SWEEP SHOT', 'SLOG SWEEP', 'REVERSE SWEEP', 'SCOOP SHOT'];
-  const badmintonTutorial = ['SMASH', 'CLEAR', 'DROP', 'NET SHOT'];
+  const badmintonTutorial = ['FUNDAMENTALS','SMASH', 'CLEAR', 'DROP', 'NET SHOT','DRIVE', 'LIFT'];
 
   const baseTechniques = activeSport === 'cricket' ? cricketTutorial : badmintonTutorial;
   const filteredTechniques = baseTechniques.filter(item => item.toLowerCase().includes(searchText.toLowerCase()));
