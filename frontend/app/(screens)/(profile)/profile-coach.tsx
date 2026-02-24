@@ -53,7 +53,7 @@ const ProfileCoach = ({ data, onPressPlayer }: ProfileCoachProps) => {
               elevation: 10,
               zIndex: 10,
             }}
-            pointerEvents="box-only"
+            // pointerEvents="box-only"
           >
             <MaterialIcons 
               name="photo-camera" 

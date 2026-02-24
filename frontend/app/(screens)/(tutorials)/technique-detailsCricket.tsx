@@ -217,6 +217,7 @@ const CricketDetail = ({ techniqueName, onBack }: any) => {
           className="w-full h-full justify-center items-center"
           resizeMode="cover"
         >  
+        {/* button turns red when hovering */}
           <View 
             className={`w-16 h-11 justify-center items-center rounded-xl transition-colors duration-200 ${
               isHovered ? 'bg-[#FF0000]' : 'bg-black'
@@ -252,6 +253,7 @@ const CricketDetail = ({ techniqueName, onBack }: any) => {
       <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 24, paddingBottom: 140 }}>
         
+        {/* Degree of Difficulty */}
         <View className="flex-row items-center mb-6">
           <Text className="font-bebas text-2xl text-black mr-2">DEGREE OF DIFFICULTY:</Text>
           <View className="bg-accent-yellow px-3 py-1 rounded-md">
@@ -259,11 +261,13 @@ const CricketDetail = ({ techniqueName, onBack }: any) => {
           </View>
         </View>
 
+        {/* Content */}
         <DetailSection label="DESCRIPTION" content={data.description} />
         <VideoPreview imageUrl={data.imageUrl} videoUrl={data.videoUrl} />
         <DetailSection label="RISKS" content={data.risks} />
         <DetailSection label="WHEN TO USE" content={data.whenToUse} />
 
+        {/* Best component */}
         <View className="my-6 p-4 bg-gray-50 rounded-2xl border border-gray-100">
           <Text className="font-bebas text-xl text-primary-dark mb-3">BEST EXPONENTS</Text>
           {data.exponents !== 'N/A' ? (
