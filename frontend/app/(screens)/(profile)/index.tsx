@@ -1,7 +1,7 @@
 import React, { useState, useLayoutEffect } from 'react';
 import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from 'expo-router'; // Add this import
+import {router, useNavigation} from 'expo-router'; // Add this import
 import ProfileAthlete, { AthleteData } from './profile';
 import ProfileCoach, { CoachData } from './profile-coach';
 import SessionsScreen from './sessions';
@@ -67,23 +67,16 @@ const Index = () => {
       edges={view === 'sessions' ? ['top'] : ['bottom']}
     >
       <View className="flex-1">
-        {view === 'profile' ? (
-          //Role Check
-          currentUser.role === 'Coach' ? (
-            <ProfileCoach 
-              data={currentUser as unknown as CoachData} 
-              onPressPlayer={() => setView('sessions')}
+        {currentUser.role === "Coach" ? (
+            <ProfileCoach
+                data={currentUser as unknown as CoachData}
+                onPressPlayer={() => router.push("/(screens)/(profile)/sessions")}
             />
-          ) : (
-            <ProfileAthlete 
-              data={currentUser as unknown as AthleteData} 
-              onPressSessions={() => setView('sessions')} 
-            />
-          )
         ) : (
-          <SessionsScreen 
-            onBackPress={() => setView('profile')} 
-          />
+            <ProfileAthlete
+                data={currentUser as unknown as AthleteData}
+                onPressSessions={() => router.push("/(screens)/(profile)/sessions")}
+            />
         )}
       </View>
     </SafeAreaView>
