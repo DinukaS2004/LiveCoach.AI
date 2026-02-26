@@ -1,19 +1,105 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { 
   View, Text, TextInput, TouchableOpacity, SafeAreaView, 
-  KeyboardAvoidingView, Platform, ScrollView, StyleSheet 
+  KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Alert, ActivityIndicator
 } from 'react-native';
 // Custom icon choices to match your unique brand identity
 import { ChevronLeft, ExternalLink, SlidersHorizontal } from 'lucide-react-native';
+import axios from "axios";
+import { auth } from "../../../lib/firebase";
 
 interface AddNoteProps {
   onClose: () => void;
   sessionTitle: string;
 }
 
+const BASE = process.env.EXPO_PUBLIC_API_BASE_URL;
+
+async function authConfig() {
+  const user = auth.currentUser;
+  if (!user) throw new Error("Not logged in");
+
+  const idToken = await user.getIdToken();
+  return {
+    headers: { Authorization: `Bearer ${idToken}` },
+  };
+}
+
+async function loadNote(sessionTitle: string) {
+  const config = await authConfig();
+  const res = await axios.get(`${BASE}/api/session-notes/myNotes`, config);
+  const found = (res.data.data || []).find((n: any) => n.title === sessionTitle);
+  return found || null;
+}
+
+async function saveNote(noteId: string | null, sessionTitle: string, content: string) {
+  const config = await authConfig();
+
+  if (noteId) {
+    return axios.put(
+      `${BASE}/api/session-notes/${noteId}`,
+      { title: sessionTitle, content },
+      config
+    );
+  }
+
+  return axios.post(
+    `${BASE}/api/session-notes`,
+    { title: sessionTitle, content },
+    config
+  );
+}
+
 const AddNoteScreen: React.FC<AddNoteProps> = ({ onClose, sessionTitle }) => {
   const [note, setNote] = useState('');
+  const [noteId, setNoteId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
   const inputRef = useRef<TextInput>(null);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        setLoading(true);
+        const existing = await loadNote(sessionTitle);
+
+        if (existing) {
+          setNote(existing.content || "");
+          setNoteId(existing._id);
+        } else {
+          setNote("");
+          setNoteId(null);
+        }
+      
+      } catch (e: any) {
+        Alert.alert("Error", e.message || "Failed to load");
+      
+      } finally {
+        setLoading(false);
+        setTimeout(() => inputRef.current?.focus(), 100);
+      }
+    })();
+  }, [sessionTitle]);
+
+  const handleDone = async () => {
+    try {
+      setSaving(true);
+
+      if (!note.trim()) {
+        onClose();
+        return;
+      }
+
+      await saveNote(noteId, sessionTitle, note);
+      onClose();
+    } catch (e: any) {
+      Alert.alert("Error", e.message || "Failed to save");
+    
+    } finally {
+      setSaving(false);
+    }
+  };
 
   useEffect(() => {
     const timer = setTimeout(() => inputRef.current?.focus(), 100);
@@ -43,7 +129,7 @@ const AddNoteScreen: React.FC<AddNoteProps> = ({ onClose, sessionTitle }) => {
               <SlidersHorizontal size={22} color="#000000" strokeWidth={2} />
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={onClose} activeOpacity={0.6}>
+            <TouchableOpacity onPress={handleDone} activeOpacity={0.6}>
               <Text className="font-bebas text-[#000000] text-2xl font-bold">Done</Text>
             </TouchableOpacity>
           </View>
