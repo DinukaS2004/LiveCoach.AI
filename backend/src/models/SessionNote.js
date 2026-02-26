@@ -1,16 +1,10 @@
 const mongoose = require("mongoose");
 
-const sessionNoteSchema = new mongoose.Schema({
-    coachId: {
+const sessionNoteSchema = new mongoose.Schema(
+  {
+    ownerUserId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Coach",
-      required: true,
-      index: true,
-    },
-
-    athleteId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Athlete",
+      ref: "User",
       required: true,
       index: true,
     },
@@ -19,7 +13,7 @@ const sessionNoteSchema = new mongoose.Schema({
       type: String,
       trim: true,
       maxlength: 200,
-      required: true,
+      default: "",
     },
 
     sessionDate: {
@@ -28,21 +22,17 @@ const sessionNoteSchema = new mongoose.Schema({
       index: true,
     },
 
-    focusArea: {
+     content: {
       type: String,
-      default: "",
-    },
-
-    notes: {
-      type: String,
-      default: "",
+      required: true,
+      trim: true,
     },
   },
 
   { timestamps: true },
 );
 
-sessionNoteSchema.index({ coachId: 1, sessionDate: -1 });
-sessionNoteSchema.index({ athleteId: 1, sessionDate: -1 });
+sessionNoteSchema.index({ ownerUserId: 1, sessionDate: -1 });
+sessionNoteSchema.index({ title: 1 });
 
 module.exports = mongoose.model("SessionNote", sessionNoteSchema);

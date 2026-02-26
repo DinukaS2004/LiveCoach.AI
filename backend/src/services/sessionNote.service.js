@@ -1,67 +1,64 @@
 const SessionNote = require("../models/SessionNote");
 const User = require("../models/User");
 
-exports.createNote = async (coachId, payload) => {
-  const athlete = await User.findById(payload.athleteId);
-  if (!athlete || athlete.role !== "athlete") 
-    throw new Error("Invalid athlete");
+exports.createNote = async (ownerUserId, payload) => {
+  const noteDate = payload.noteDate ? new Date(payload.noteDate) : new Date();
 
   return await SessionNote.create({
-    coachId,
-    athleteId: payload.athleteId,
-    title: payload.title,
-    notes: payload.notes || "",
-    sessionDate: payload.sessionDate || new Date(),
-    focusArea: payload.focusArea || "",
+    ownerUserId,
+    title: payload.title || "",
+    content: payload.content,
+    noteDate,
   });
 };
 
-exports.listForCoach = async (coachId) => {
-  return await SessionNote.find({ coachId }).sort({ sessionDate: -1 });
-};
+exports.listMine = async (ownerUserId, filters = {}) => {
+  const query = { ownerUserId };
 
-exports.listForAthlete = async (athleteId) => {
-  return await SessionNote.find({
-    athleteId,
-    status: "published",
-    isVisibleToAthlete: true,
-  }).sort({ sessionDate: -1 });
-};
-
-exports.getByIdForUser = async (noteId, user) => {
-  const note = await SessionNote.findById(noteId);
-  if (!note) throw new Error("Not found");
-
-  if (user.role === "coach" && note.coachId.toString() === user._id.toString())
-    return note;
-
-  if (
-    user.role === "athlete" &&
-    note.athleteId.toString() === user._id.toString() &&
-    note.status === "published" &&
-    note.isVisibleToAthlete
-  ) 
-  
-  {
-    return note;
+  if (filters.date) {
+    const d = new Date(filters.date);
+    const start = new Date(d);
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(d);
+    end.setHours(23, 59, 59, 999);
+    query.noteDate = { $gte: start, $lte: end };
   }
 
-  throw new Error("Forbidden");
+  return await SessionNote.find(query).sort({ noteDate: -1, createdAt: -1 });
 };
 
-exports.updateNote = async (noteId, coachId, updates) => {
-  const note = await SessionNote.findOne({ _id: noteId, coachId });
+exports.getByIdForUser = async (noteId, ownerUserId) => {
+  const note = await SessionNote.findOne({ _id: noteId, ownerUserId });
+  if (!note){ 
+    throw new Error("Not found");
+  }
+    
+  return note;
+};
+
+exports.updateNote = async (noteId, ownerUserId, updates) => {
+  const note = await SessionNote.findOne({ _id: noteId, ownerUserId });
   if (!note) throw new Error("Not found or forbidden");
 
-  delete updates.coachId;
-  delete updates.athleteId;
+  delete updates.ownerUserId;
 
-  Object.assign(note, updates);
+  if (typeof updates.title === "string"){ 
+    note.title = updates.title;
+  }  
+  
+  if (typeof updates.content === "string"){ 
+    note.content = updates.content;
+  }  
+  
+  if (updates.noteDate) note.noteDate = new Date(updates.noteDate);
+
   await note.save();
   return note;
 };
 
-exports.deleteNote = async (noteId, coachId) => {
-  const result = await SessionNote.deleteOne({ _id: noteId, coachId });
-  if (result.deletedCount === 0) throw new Error("Not found or forbidden");
+exports.deleteNote = async (noteId, ownerUserId) => {
+  const result = await SessionNote.deleteOne({ _id: noteId, ownerUserId });
+  if (result.deletedCount === 0){ 
+    throw new Error("Not found or forbidden");
+  }
 };
