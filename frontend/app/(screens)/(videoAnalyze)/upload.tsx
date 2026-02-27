@@ -1,9 +1,12 @@
-import {View, TextInput} from 'react-native'
+import {View, TextInput, ActivityIndicator, Alert} from 'react-native'
 import React, {useState, useEffect} from 'react'
 import ButtonYellow from '@/app/components/buttonYellow';
 import DropDownPicker from 'react-native-dropdown-picker';
 import UploadResultModal from './upload-result';
 import { router } from "expo-router";
+import * as DocumentPicker from 'expo-document-picker';
+import { auth } from '@/lib/firebase';
+import { uploadAndAnalyze } from '@/lib/analyzeApi';
 
 
 
@@ -28,6 +31,10 @@ const SHOTS_DATA = {
 const Upload = () => {
     //State for Pop up
     const [showResult, setShowResult] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [selectedVideoUri, setSelectedVideoUri] = useState<string | null>(null);
+    const [analysisId, setAnalysisId] = useState<string | null>(null);
+    
     // State for Sport Dropdown
     const [openSport, setOpenSport] = useState(false);
     const [sportValue, setSportValue] = useState(null);
@@ -47,6 +54,69 @@ const Upload = () => {
             setShots([]);
         }
     }, [sportValue]);
+
+    const pickVideo = async () => {
+        try {
+            const result = await DocumentPicker.getDocumentAsync({
+                type: 'video/*',
+                copyToCacheDirectory: true,
+            });
+
+            if (!result.canceled && result.assets && result.assets[0]) {
+                setSelectedVideoUri(result.assets[0].uri);
+            }
+        } catch (error) {
+            console.error('Error picking video:', error);
+            Alert.alert('Error', 'Failed to pick video');
+        }
+    };
+
+    const handleUploadAndAnalyze = async () => {
+        if (!selectedVideoUri) {
+            Alert.alert('Error', 'Please select a video first');
+            return;
+        }
+
+        if (!sportValue || !shotValue) {
+            Alert.alert('Error', 'Please select both sport and shot type');
+            return;
+        }
+
+        setLoading(true);
+
+        try {
+            const currentUser = auth.currentUser;
+            if (!currentUser) {
+                Alert.alert('Error', 'User not authenticated');
+                setLoading(false);
+                return;
+            }
+
+            const idToken = await currentUser.getIdToken();
+
+            const result = await uploadAndAnalyze(
+                selectedVideoUri,
+                sportValue as string,
+                shotValue as string,
+                idToken
+            );
+
+            if (result.success && result.data?.analysisId) {
+                setAnalysisId(result.data.analysisId);
+                setShowResult(true);
+            } else {
+                Alert.alert('Error', result.message || 'Analysis failed');
+            }
+        } catch (error: any) {
+            console.error('Upload error:', error);
+            Alert.alert(
+                'Error',
+                error.response?.data?.message || 'Upload failed. Please try again.'
+            );
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <View className="flex-1">
@@ -100,12 +170,28 @@ const Upload = () => {
                 dropDownContainerStyle={styles.containerStyle}
                 />
             </View>
-                <View className="my-8">
+
+            {/* Video Selection Button */}
+            <View className="my-4">
+                <ButtonYellow
+                    title={selectedVideoUri ? "VIDEO SELECTED ✓" : "PICK VIDEO"}
+                    onPress={pickVideo}
+                />
+            </View>
+
+            {/* Upload and Analyze Button */}
+            <View className="my-4">
+                {loading ? (
+                    <View className="bg-accent-yellow py-4 rounded-2xl items-center justify-center">
+                        <ActivityIndicator size="large" color="#000" />
+                    </View>
+                ) : (
                     <ButtonYellow
-                        title="UPLOAD VIDEO"
-                        onPress={() => setShowResult(true)}
+                        title="UPLOAD & ANALYZE"
+                        onPress={handleUploadAndAnalyze}
                     />
-                </View>   
+                )}
+            </View>   
             </View>
 
             {/* Upload Result Popup */}
@@ -114,7 +200,10 @@ const Upload = () => {
                 onClose={() => setShowResult(false)}
                 onAnalyze={() => {
                     setShowResult(false);
-                    router.push("/analyze-result");
+                    router.push({
+                        pathname: "/analyze-result",
+                        params: { analysisId }
+                    });
             }}
             />
         </View>    

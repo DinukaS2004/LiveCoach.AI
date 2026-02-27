@@ -6,6 +6,7 @@ const router = express.Router();
 const authRoutes = require('./auth.routes');
 const userRoutes = require('./user.routes');
 const sessionNoteRoutes = require("./sessionNote.routes");
+const aiRoutes = require('./aiService.routes');
 
 // Health check endpoint
 router.get('/health', (req, res) => {
@@ -21,4 +22,5 @@ router.get('/health', (req, res) => {
 router.use('/auth', authRoutes);
 router.use('/user', userRoutes);
 router.use("/session-notes", sessionNoteRoutes);
+router.use('/ai', aiRoutes); 
 module.exports = router;
