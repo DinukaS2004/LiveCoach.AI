@@ -5,6 +5,7 @@ const router = express.Router();
 
 const authRoutes = require('./auth.routes');
 const userRoutes = require('./user.routes');
+const sessionNoteRoutes = require("./sessionNote.routes");
 
 // Health check endpoint
 router.get('/health', (req, res) => {
@@ -19,5 +20,5 @@ router.get('/health', (req, res) => {
 // Mount route modules
 router.use('/auth', authRoutes);
 router.use('/user', userRoutes);
-
+router.use("/session-notes", sessionNoteRoutes);
 module.exports = router;

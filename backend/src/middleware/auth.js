@@ -121,3 +121,10 @@ module.exports = {
     attachUser,
     requireRole,
 };
+
+const auth = [verifyFirebaseToken, attachUser];
+
+module.exports = auth;
+module.exports.verifyFirebaseToken = verifyFirebaseToken;
+module.exports.attachUser = attachUser;
+module.exports.requireRole = requireRole;
