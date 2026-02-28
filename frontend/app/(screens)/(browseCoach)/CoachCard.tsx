@@ -5,11 +5,14 @@ type CoachCardProps = {
   name: string;
   location: string;
   image: any; 
-  onContactPress?: () => void;   // ← added
+  price: number; 
+  billingCycle: 'Monthly' | 'Yearly'; 
+  onContactPress?: () => void;   // ← add
 };
 
-const CoachCard = ({ name, location, image, onContactPress }: CoachCardProps) => {
+const CoachCard = ({ name, location,price, billingCycle, image, onContactPress }: CoachCardProps) => {
   return (
+    
     <View className="bg-primary rounded-lg mt-8">
       <Image source={image} className="w-full h-32 rounded-lg bg-gray-200" resizeMode="contain"/>
       <View className="mt-3 flex-row items-start">
@@ -19,6 +22,9 @@ const CoachCard = ({ name, location, image, onContactPress }: CoachCardProps) =>
           </Text>
           <Text className="font-manrope text-sm text-gray-500 mt-1">
             {location}
+          </Text>
+          <Text className="font-manrope text-sm text-gray-700 mt-1">
+            ${price} / {billingCycle === 'Monthly' ? 'month' : 'year'}
           </Text>
         </View>
 
