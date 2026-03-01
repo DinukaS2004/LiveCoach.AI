@@ -35,3 +35,40 @@ export const getAllGigs = async () => {
     return { success: false, data: [] };
   }
 };
+
+
+export const deleteMyGig = async (token: string) => {
+  try {
+    const response = await fetch(`${process.env.EXPO_PUBLIC_API_BASE_URL}/api/gigs/delete`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+    });
+
+    return await response.json();
+  } catch (error) {
+    console.error("Delete API Error:", error);
+    return { success: false, message: "Network error" };
+  }
+};
+
+
+
+export const updateGig = async (gigData: any, token: string) => {
+  try {
+    const response = await fetch(`${process.env.EXPO_PUBLIC_API_BASE_URL}/api/gigs/update`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(gigData),
+    });
+
+    return await response.json();
+  } catch (error) {
+    console.error("Update Error:", error);
+    return { success: false, message: "Network error" };
+  }
+};
