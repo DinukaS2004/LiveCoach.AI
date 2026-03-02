@@ -1,21 +1,23 @@
 const express = require('express');
 const router = express.Router();
 const gigController = require('../controllers/gig.controller');
-
-// Import the 'Security Guard' tools your team already made
 const { verifyFirebaseToken, attachUser, requireRole } = require('../middleware/auth');
 
-// 1. Route for Athletes (and Coaches) to view all gigs
-// This only requires being logged in
+// 1. Route for everyone to view gigs
 router.get('/', gigController.getAllGigs);
 
+// Add this line to your routes
+router.put('/update', verifyFirebaseToken, attachUser, requireRole('coach'), gigController.updateGig);
+
+// Add this line to your routes file
+router.delete('/delete', verifyFirebaseToken, attachUser, requireRole('coach'), gigController.deleteGig);
+
 // 2. Route for Coaches ONLY to create a new gig
-// Note how we use 'requireRole('coach')' here!
 router.post(
     '/create', 
-    verifyFirebaseToken, // Checks if the user is logged into Firebase
-    attachUser,          // Finds the user in your MongoDB
-    requireRole('coach'), // Ensures the user has the 'coach' role
+    verifyFirebaseToken, 
+    attachUser, 
+    requireRole('coach'), 
     gigController.createGig
 );
 
