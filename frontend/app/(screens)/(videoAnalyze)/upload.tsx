@@ -187,7 +187,7 @@ const Upload = () => {
                     </View>
                 ) : (
                     <ButtonYellow
-                        title="UPLOAD & ANALYZE"
+                        title="UPLOAD"
                         onPress={handleUploadAndAnalyze}
                     />
                 )}

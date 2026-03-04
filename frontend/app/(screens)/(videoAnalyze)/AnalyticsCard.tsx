@@ -94,7 +94,7 @@ const AnalyticsCard = ({ data }: Props) => {
     <View className="flex-1">
       {/* Overall Score */}
       {/* <View className="mt-10 bg-white rounded-2xl p-8 border border-gray-100 shadow-lg shadow-black/5"> */}
-      <View className="mt-5 bg-white rounded-2xl p-8 border border-gray-100"
+      <View className="mt-5 bg-white rounded-2xl p-8 border border-neutral-500"
           style={{
             shadowColor: "#000",
             shadowOffset: { width: 0, height: 6 },
@@ -131,22 +131,22 @@ const AnalyticsCard = ({ data }: Props) => {
             </Svg>
 
             <View className="absolute left-0 right-0 top-0 bottom-0 items-center justify-center">
-              <Text className="text-2xl font-bold text-black">
+              <Text className="font-manrope text-2xl font-bold text-primary-dark">
                 {overallScore}/{maxScore}
               </Text>
-              <Text className="text-[12px] text-gray-500 italic">Overall Score</Text>
+              <Text className="font-manrope text-[12px] text-neutral-700 italic">Overall Score</Text>
             </View>
           </View>
 
           {/* Text */}
           <View className="flex-1">
-            <Text className="text-2xl font-semibold mb-1"
+            <Text className="font-manrope text-2xl font-semibold mb-1"
             style={{ color: performanceColor }}>
             {performanceLabel}
             </Text>
             {/* <Text className="text-lg text-gray-500">Today&apos;s session</Text> */}
             <View className="self-start mt-1 px-3 py-1 rounded-full bg-accent-yellow">
-              <Text className="text-[10px] font-bold text-gray-700">
+              <Text className="font-manrope text-[10px] font-bold text-primary-dark">
                 TODAY&apos;S SESSION
               </Text>
             </View>
@@ -156,7 +156,7 @@ const AnalyticsCard = ({ data }: Props) => {
 
       
       {/* Distance to Expert */}
-      <View className="mt-6 bg-white rounded-2xl p-4 border border-gray-100"
+      <View className="mt-6 bg-white rounded-2xl p-4 border border-neutral-500"
           style={{
             shadowColor: "#000",
             shadowOffset: { width: 0, height: 6 },
@@ -178,20 +178,20 @@ const AnalyticsCard = ({ data }: Props) => {
         <View className="flex-row items-center justify-between mb-6">
           <View className="flex-row items-center mb-2">
             <View className="w-1.5 h-6 rounded-full bg-accent-yellow mr-3" />
-            <Text className="text-2xl font-semibold text-gray-900">
+            <Text className="font-manrope text-2xl font-semibold text-primary-dark">
               Distance to Expert
             </Text>
           </View>
           
 
-          <Text className="text-lg font-medium text-gray-700 mb-2">
+          <Text className="font-manrope text-lg font-medium text-neutral-800 mb-2">
             {distanceValue.toFixed(2)} away
           </Text>
         </View>
 
         {/* Progress Section */}
         <View className="relative pt-6 pb-4">
-          <View className="h-4 bg-gray-200 rounded-full overflow-visible">
+          <View className="h-4 bg-primary-light rounded-full overflow-visible">
             <View className="h-4"
                 style={{
                   width: `${distanceProgress}%`,
@@ -241,19 +241,19 @@ const AnalyticsCard = ({ data }: Props) => {
             {/* Labels */}
           <View className="flex-row justify-between mt-6">
             <View>
-              <Text className="text-[10px] font-black text-green-500 uppercase">
+              <Text className="font-manrope text-[10px]  text-green-500 uppercase">
               YOU
               </Text>
-              <Text className="text-xs font-bold text-gray-400">
+              <Text className="font-manrope text-xs font-bold text-neutral-700">
                 0%
              </Text>
             </View>
 
             <View className="items-end">
-              <Text className="text-[10px] font-black text-red-500 uppercase">
+              <Text className="font-manrope text-[10px]  text-red-500 uppercase">
                EXPERT
               </Text>
-              <Text className="text-xs font-bold text-gray-400">
+              <Text className="font-manrope text-xs font-bold text-neutral-700">
               100%
               </Text>
             </View>
@@ -262,7 +262,7 @@ const AnalyticsCard = ({ data }: Props) => {
       </View>
 
       {/* Similarity Score */}
-      <View className="mt-6 bg-white rounded-2xl p-4 border border-gray-100"
+      <View className="mt-6 bg-white rounded-2xl p-4 border border-neutral-500"
         style={{
           shadowColor: "#000",
           shadowOffset: { width: 0, height: 6 },
@@ -273,19 +273,19 @@ const AnalyticsCard = ({ data }: Props) => {
       >
         <View className="flex-row items-center mb-4">
             <View className="w-1.5 h-6 rounded-full bg-accent-yellow mr-3" />
-            <Text className="text-2xl font-semibold text-gray-900">
+            <Text className="font-manrope text-2xl font-semibold text-primary-dark">
               Similarity Score
             </Text>
         </View>
 
         <View className="items-center mb-4">
-          <Text className="text-4xl font-semibold" style={{ color: performanceColor }}>
+          <Text className="font-manrope text-4xl font-semibold" style={{ color: performanceColor }}>
             {similarityScore.toFixed(3)}
           </Text>
         </View>
 
         <View className="items-center mb-6">
-          <Text className="text-xs text-gray-500">
+          <Text className="font-manrope text-xs text-neutral-700">
             Similarity (0 to 1)
           </Text>
         </View>
@@ -294,7 +294,7 @@ const AnalyticsCard = ({ data }: Props) => {
         <View className="relative">
              {/* Dotted line */}
             <View className="flex-row justify-between mb-2">
-                <View className="flex-1 border-t-2 border-dotted border-gray-400" />
+                <View className="flex-1 border-t-2 border-dotted border-neutral-700" />
             </View>
     
         {/*  DYNAMIC BLUE DOT - moves based on similarityScore */}
@@ -309,9 +309,9 @@ const AnalyticsCard = ({ data }: Props) => {
 
 
           <View className="flex-row justify-between">
-            <Text className="text-xs text-gray-500">Low</Text>
-            <Text className="text-xs text-gray-500">Medium</Text>
-            <Text className="text-xs text-gray-500">High</Text>
+            <Text className="font-manrope text-xs text-neutral-700">Low</Text>
+            <Text className="font-manrope text-xs text-neutral-700">Medium</Text>
+            <Text className="font-manrope text-xs text-neutral-700">High</Text>
           </View>
         </View>
       </View>
@@ -321,7 +321,7 @@ const AnalyticsCard = ({ data }: Props) => {
       {/* Feedback */}
       {/* Feedback – Coach Notes timeline style */}
         <View
-          className="mt-6 bg-white rounded-2xl p-5 border border-gray-100"
+          className="mt-6 bg-white rounded-2xl p-5 border border-neutral-500"
           style={{
             shadowColor: '#000',
             shadowOffset: { width: 0, height: 6 },
@@ -333,7 +333,7 @@ const AnalyticsCard = ({ data }: Props) => {
   {/* Title */}
         <View className="flex-row items-center mb-6">
             <View className="w-1.5 h-6 rounded-full bg-accent-yellow mr-3" />
-            <Text className="text-2xl font-semibold text-gray-900">
+            <Text className="font-manrope text-2xl font-semibold text-primary-dark">
               Feedback
             </Text>
         </View>
@@ -341,11 +341,11 @@ const AnalyticsCard = ({ data }: Props) => {
 
   {/* Summary Box */}
           <View className="bg-yellow-50 rounded-xl p-5 mb-8">
-            <Text className="text-gray-800 leading-relaxed">
+            <Text className="font-manrope text-neutral-800 leading-relaxed">
               <Text style={{ color: performanceColor, fontWeight: '800'}}>
                 Overall:{' '}
               </Text>
-              <Text className="text-gray-800">
+              <Text className="font-manrope text-neutral-800">
                 {data.overallFeedback?.replace("Overall:", "").trim()}
               </Text>
             </Text>
@@ -354,7 +354,7 @@ const AnalyticsCard = ({ data }: Props) => {
   {/* Timeline container */}
   <View className="relative">
     {/* Vertical line */}
-    <View className="absolute left-5 top-0 bottom-0 w-[1px] bg-gray-200" />
+    <View className="absolute left-5 top-0 bottom-0 w-[1px] bg-neutral-500" />
 
     {/* Combined notes */}
     <View>
@@ -373,7 +373,7 @@ const AnalyticsCard = ({ data }: Props) => {
 
           {/* Text */}
           <View className="flex-1 pt-1">
-            <Text className="text-sm text-gray-800 leading-relaxed">
+            <Text className="font-manrope text-sm text-neutral-800 leading-relaxed">
               {item}
             </Text>
           </View>
@@ -395,7 +395,7 @@ const AnalyticsCard = ({ data }: Props) => {
 
           {/* Text */}
           <View className="flex-1 pt-1">
-            <Text className="text-sm text-gray-800 leading-relaxed">
+            <Text className="font-manrope text-sm text-neutral-800 leading-relaxed">
               {item}
             </Text>
           </View>
@@ -406,7 +406,7 @@ const AnalyticsCard = ({ data }: Props) => {
 </View>
 
       {/* Recommendations */}
-      <View className="mt-6 bg-white rounded-2xl p-4 border border-gray-100"
+      <View className="mt-6 bg-white rounded-2xl p-4 border border-neutral-500"
         style={{
           shadowColor: "#000",
           shadowOffset: { width: 0, height: 6 },
@@ -419,13 +419,13 @@ const AnalyticsCard = ({ data }: Props) => {
         <View className="flex-row items-center justify-between mb-4">
           <View className="flex-row items-center flex-1 pr-3">
             <View className="w-1.5 h-6 rounded-full bg-accent-yellow mr-3" />
-            <Text className="text-2xl font-semibold text-gray-700">
+            <Text className="font-manrope text-2xl font-semibold text-primary-dark">
               Recommendations
             </Text>
           </View>
 
           <View className="px-3 py-1 rounded-full bg-accent-yellow ml-6">
-            <Text className="text-xs font-bold text-black">
+            <Text className="font-manrope text-xs font-bold text-primary-dark">
               {recommendations.length} Tips
             </Text>
           </View>
@@ -440,7 +440,7 @@ const AnalyticsCard = ({ data }: Props) => {
               <View className="w-9 h-9 rounded-full bg-amber-100 items-center justify-center mr-3">
                 <MaterialIcons name="tips-and-updates" size={20} color="#FACC15" />
               </View>
-              <Text className="text-sm text-gray-800 flex-1 ">
+              <Text className="font-manrope text-sm text-neutral-800 flex-1 ">
                 {item}
               </Text>
               {/* NEW: Arrow circle */}

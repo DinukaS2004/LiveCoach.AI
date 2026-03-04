@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import SportTabs from './SportTabs';
@@ -91,10 +91,10 @@ const Index = () => {
   const visibleCoaches = coaches.filter(c => c.sport === selectedSport);
 
   return (
-    <SafeAreaView className="flex-1 bg-primary">
+    <SafeAreaView className="flex-1 bg-primary-light">
       <ScrollView showsVerticalScrollIndicator={false}>
         <View className="px-4 py-4 pt-6">
-          <Text className="font-bebas text-4xl font-bold text-black">COACH GIGS</Text>
+          <Text className="font-bebas text-4xl font-bold text-primary-dark">COACH GIGS</Text>
           <View className="mt-4"><SportTabs value={selectedSport} onSportChange={setSelectedSport} /></View>
 
           {/* Coach-Only UI: Toggle between Card and Button */}

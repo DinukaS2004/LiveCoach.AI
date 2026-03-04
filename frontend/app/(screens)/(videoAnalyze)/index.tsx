@@ -7,9 +7,9 @@ import UploadCoach from './upload-coach';
 const Index = () => {
 
     return (
-        <SafeAreaView className="flex-1 bg-primary">
+        <SafeAreaView className="flex-1 bg-primary-light">
             <View className="px-4 py-4 pt-6 flex-1">
-                <Text className="font-bebas text-4xl font-bold text-black">
+                <Text className="font-bebas text-4xl font-bold text-primary-dark">
                     UPLOAD VIDEO
                 </Text>
 

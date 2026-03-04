@@ -22,7 +22,7 @@ const CreateGigCard = ({ onPress }: CreateGigCardProps) => {
 
       // We use a ternary operator to toggle the border color class
       className={`bg-white border-2 border-dashed rounded-2xl p-4 flex flex-row items-center justify-center mt-6 h-30 w-full ${
-        isPressed ? 'border-yellow-400' : 'border-gray-300'
+        isPressed ? 'border-yellow-400' : 'border-neutral-500'
       }`}
     >
       <View className="w-12 h-12 bg-gray-50 rounded-full items-center justify-center border border-gray-100">
@@ -32,12 +32,12 @@ const CreateGigCard = ({ onPress }: CreateGigCardProps) => {
       </View>
       
       <View className="ml-4">
-        <Text className={`font-bold text-lg ${
-          isPressed ? 'text-yellow-600' : 'text-gray-800'
+        <Text className={`font-manrope font-bold text-lg ${
+          isPressed ? 'text-yellow-600' : 'text-neutral-900'
         }`}>
           Create Your Own Gig
         </Text>
-        <Text className="text-gray-400 text-sm">
+        <Text className="font-manrope text-neutral-700 text-sm">
           Post your coaching services here
         </Text>
       </View>

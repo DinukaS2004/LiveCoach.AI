@@ -1,6 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
-
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 
 type TabButtonProps = {
   label: string;
@@ -8,18 +7,41 @@ type TabButtonProps = {
   onPress: () => void;
 };
 
+const styles = StyleSheet.create({
+  triangleLeft: {
+    width: 0,
+    height: 0,
+    backgroundColor: 'transparent',
+    borderStyle: 'solid',
+    borderTopWidth: 18,
+    borderBottomWidth: 18,
+    borderRightWidth: 12,
+    borderTopColor: 'transparent',
+    borderBottomColor: 'transparent',
+  },
+  triangleRight: {
+    width: 0,
+    height: 0,
+    backgroundColor: 'transparent',
+    borderStyle: 'solid',
+    borderTopWidth: 18,
+    borderBottomWidth: 18,
+    borderLeftWidth: 12,
+    borderTopColor: 'transparent',
+    borderBottomColor: 'transparent',
+  },
+});
+
 const TabButton = ({ label, isActive, onPress }: TabButtonProps) => (
-  <TouchableOpacity onPress={onPress} className="flex-row items-center active:opacity-80">
-    {isActive && (
-      <View className="w-0 h-0 border-t-[18px] border-t-transparent border-b-[18px] border-b-transparent border-r-[12px] border-r-accent-yellow" />
-    )}
-    <View className={`h-[36px] justify-center items-center px-5 ${isActive ? 'bg-accent-yellow' : 'bg-transparent'}`}>
-      <Text className="font-manrope font-semibold text-primary-dark">{label}</Text>
-    </View>
-    {isActive && (
-      <View className="w-0 h-0 border-t-[18px] border-t-transparent border-b-[18px] border-b-transparent border-l-[12px] border-l-accent-yellow" />
-    )}
-  </TouchableOpacity>
+  <Pressable onPress={onPress} className="flex-row items-center active:opacity-80">
+    <View style={styles.triangleLeft} className={isActive ? 'border-r-accent-yellow' : 'border-r-neutral-50'}/>
+      <View className={`h-[36px] px-4 justify-center items-center ${isActive ? 'bg-accent-yellow' : 'bg-neutral-50'}`}>
+        <Text className={`font-manrope uppercase tracking-tighter ${isActive ? 'font-extrabold text-black' : 'font-semibold text-neutral-800'}`}>
+          {label}
+        </Text>
+      </View>
+      <View style={styles.triangleRight} className={isActive ? 'border-l-accent-yellow' : 'border-l-neutral-50'}/>
+  </Pressable>
 );
 
 type Props = {
@@ -30,13 +52,12 @@ type Props = {
 const SportTabs = ({ value, onSportChange }: Props) => {
   return (
     <View className="pt-2.5">
-      <View className="flex-row gap-3">
+      <View className="flex-row gap-2">
         <TabButton
           label="Cricket"
           isActive={value === 'Cricket'}
           onPress={() => onSportChange('Cricket')}
         />
-
         <TabButton
           label="Badminton"
           isActive={value === 'Badminton'}

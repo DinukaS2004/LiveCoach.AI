@@ -30,7 +30,7 @@ const UploadResultModal = ({ visible, onAnalyze, onClose }: Props) => {
               <Ionicons name="checkmark" size={32} color="black" />
             </View>
 
-            <Text className="text-2xl font-bold text-black mb-6">
+            <Text className="font-manrope text-2xl font-bold text-primary-dark mb-6">
               UPLOAD COMPLETED
             </Text>
 
@@ -39,7 +39,7 @@ const UploadResultModal = ({ visible, onAnalyze, onClose }: Props) => {
               className="w-full bg-accent-yellow py-4 rounded-2xl"
               onPress={onAnalyze}
             >
-              <Text className="text-center font-bold text-black text-lg">
+              <Text className="font-manrope text-center font-bold text-primary-dark text-lg">
                 ANALYZE
               </Text>
             </TouchableOpacity>

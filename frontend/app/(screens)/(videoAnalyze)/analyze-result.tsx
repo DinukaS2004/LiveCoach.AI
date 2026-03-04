@@ -73,7 +73,7 @@ const AnalyzeResult = () => {
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 bg-primary items-center justify-center">
+      <SafeAreaView className="flex-1 bg-primary-light items-center justify-center">
         <ActivityIndicator size="large" color="#000" />
       </SafeAreaView>
     );
@@ -81,8 +81,8 @@ const AnalyzeResult = () => {
 
   if (!analyticsData) {
     return (
-      <SafeAreaView className="flex-1 bg-primary items-center justify-center px-4">
-        <Text className="text-center text-lg text-black">
+      <SafeAreaView className="flex-1 bg-primary-light items-center justify-center px-4">
+        <Text className="font-manrope text-center text-lg text-primary-dark">
           Failed to load analysis results
         </Text>
       </SafeAreaView>
@@ -90,7 +90,7 @@ const AnalyzeResult = () => {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-primary">
+    <SafeAreaView className="flex-1 bg-primary-light">
       <View className="px-4 pt-6">
         <View className="flex-row items-start mb-4 w-full">
           <TouchableOpacity 
@@ -103,7 +103,7 @@ const AnalyzeResult = () => {
           </TouchableOpacity>
           
           <Text 
-            className="font-bebas font-bold text-black flex-1 text-4xl"
+            className="font-bebas font-bold text-primary-dark flex-1 text-4xl"
             style={{ lineHeight: 40 }} 
           >
             ANALYTICS AND FEEDBACK
