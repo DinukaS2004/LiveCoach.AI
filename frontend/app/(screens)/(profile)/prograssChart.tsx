@@ -1,10 +1,23 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, SafeAreaView } from 'react-native';
 import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react-native';
-import { useRouter } from 'expo-router';
+import { auth } from '../../../lib/firebase';
+import { router } from "expo-router";
 
-const PrograssChart = () => {
-  const router = useRouter();
+// Base API URL
+const BASE = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:3000';
+
+// format as the backend: YYYY-MM-DD.
+const toDateKey = (year: number, monthIndex: number, day: number) => {
+  const utcDate = new Date(Date.UTC(year, monthIndex, day));
+  return utcDate.toISOString().slice(0, 10);
+};
+
+interface PrograssChartProps {
+  onBackPress?: () => void;
+}
+
+const PrograssChart: React.FC<PrograssChartProps> = ({ onBackPress }) => {
   
   // Get today's actual date
   const today = new Date();
@@ -13,11 +26,9 @@ const PrograssChart = () => {
   const actualDay = today.getDate();
 
   const [selectedYear, setSelectedYear] = useState(actualYear);
-
-  // Yellow "Work" days
-  const [activeDates, setActiveDates] = useState<string[]>([
-    `${actualYear}-1-2`, `${actualYear}-1-11`, `${actualYear}-1-16`, `${actualYear}-1-20` 
-  ]);
+  //active session dates 
+  const [activeDates, setActiveDates] = useState<string[]>([]);
+  const activeDateSet = useMemo(() => new Set(activeDates), [activeDates]);
 
   const months = [
     'January', 'February', 'March', 'April', 'May', 'June', 
@@ -26,15 +37,47 @@ const PrograssChart = () => {
 
   const weekDays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
-  const toggleDate = (monthIndex: number, day: number) => {
-    const dateString = `${selectedYear}-${monthIndex}-${day}`;
-    setActiveDates(prevDates => {
-      if (prevDates.includes(dateString)) {
-        return prevDates.filter(d => d !== dateString); 
+   const handleBack = () => {
+          if (onBackPress) return onBackPress();
+          router.replace("/(screens)/(profile)");
+      };
+
+  useEffect(() => {
+    let isMounted = true;
+
+    // Loads user's session dates 
+    const fetchProgressData = async () => {
+      try {
+        const user = auth.currentUser;
+        if (!user) {
+          if (isMounted) setActiveDates([]); //if no user, activedates
+          return;
+        }
+
+        const idToken = await user.getIdToken();
+        const response = await fetch(`${BASE}/api/progress/my-sessions`, {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
+        });
+
+        const payload = await response.json();
+        const sessionDates = Array.isArray(payload?.data?.sessionDates) ? payload.data.sessionDates : [];
+
+        if (isMounted) setActiveDates(sessionDates);
+      } catch (error) {
+        console.error('Failed to load progress chart data:', error);
+        if (isMounted) setActiveDates([]);
       }
-      return [...prevDates, dateString]; 
-    });
-  };
+    };
+
+    fetchProgressData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const renderCalendarDays = (monthIndex: number) => {
     const daysInMonth = new Date(selectedYear, monthIndex + 1, 0).getDate();
@@ -61,14 +104,13 @@ const PrograssChart = () => {
           ))}
 
           {daysArray.map((day) => {
-            const dateString = `${selectedYear}-${monthIndex}-${day}`;
+            const dateKey = toDateKey(selectedYear, monthIndex, day);
             const isToday = selectedYear === actualYear && monthIndex === actualMonth && day === actualDay;
-            const isWorkDay = activeDates.includes(dateString);
+            const isWorkDay = activeDateSet.has(dateKey);
 
             return (
-              <TouchableOpacity 
+              <View
                 key={day} 
-                onPress={() => toggleDate(monthIndex, day)}
                 style={{ width: '14.28%', aspectRatio: 1 }}
                 className="p-[1px] items-center justify-center"
               >
@@ -88,7 +130,7 @@ const PrograssChart = () => {
                     {day}
                   </Text>
                 </View>
-              </TouchableOpacity>
+              </View>
             );
           })}
         </View>
@@ -100,8 +142,7 @@ const PrograssChart = () => {
     <SafeAreaView className="flex-1 bg-white">
       {/* Top Header */}
       <View className="flex-row items-center px-6 py-4">
-        {/* --- CRITICAL FIX: EXPLICIT ROUTING TO PROFILE --- */}
-        <TouchableOpacity onPress={() => router.push("/(screens)/(profile)" as any)}>
+        <TouchableOpacity onPress={handleBack}>
           <ArrowLeft size={28} color="black" strokeWidth={3} />
         </TouchableOpacity>
         <Text className="ml-4 font-bebas text-3xl text-black uppercase tracking-tighter">
