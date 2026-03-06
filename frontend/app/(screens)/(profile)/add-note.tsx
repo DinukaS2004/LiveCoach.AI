@@ -1,16 +1,20 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { 
-  View, Text, TextInput, TouchableOpacity, SafeAreaView, 
-  KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Alert, ActivityIndicator
-} from 'react-native';
-// Custom icon choices to match your unique brand identity
-import { ChevronLeft, ExternalLink, SlidersHorizontal } from 'lucide-react-native';
+import React, { useState, useRef, useEffect } from "react";
+import {
+  View, Text, TextInput, TouchableOpacity, SafeAreaView,
+  KeyboardAvoidingView, Platform, ScrollView,StyleSheet, Alert, ActivityIndicator,
+} from "react-native";
+import {
+  ChevronLeft,
+  ExternalLink,
+  SlidersHorizontal,
+} from "lucide-react-native";
 import axios from "axios";
 import { auth } from "../../../lib/firebase";
 
 interface AddNoteProps {
   onClose: () => void;
   sessionTitle: string;
+  noteId: string;
 }
 
 const BASE = process.env.EXPO_PUBLIC_API_BASE_URL;
@@ -20,39 +24,30 @@ async function authConfig() {
   if (!user) throw new Error("Not logged in");
 
   const idToken = await user.getIdToken();
-  return {
-    headers: { Authorization: `Bearer ${idToken}` },
-  };
+  return { headers: { Authorization: `Bearer ${idToken}` } };
 }
 
-async function loadNote(sessionTitle: string) {
+async function loadNoteById(noteId: string) {
   const config = await authConfig();
-  const res = await axios.get(`${BASE}/api/session-notes/myNotes`, config);
-  const found = (res.data.data || []).find((n: any) => n.title === sessionTitle);
-  return found || null;
+  const res = await axios.get(`${BASE}/api/session-notes/${noteId}`, config);
+  return res.data?.data || null;
 }
 
-async function saveNote(noteId: string | null, sessionTitle: string, content: string) {
+async function updateNote(noteId: string, title: string, content: string) {
   const config = await authConfig();
-
-  if (noteId) {
-    return axios.put(
-      `${BASE}/api/session-notes/${noteId}`,
-      { title: sessionTitle, content },
-      config
-    );
-  }
-
-  return axios.post(
-    `${BASE}/api/session-notes`,
-    { title: sessionTitle, content },
-    config
+  return axios.put(
+    `${BASE}/api/session-notes/${noteId}`,
+    { title, content },
+    config,
   );
 }
 
-const AddNoteScreen: React.FC<AddNoteProps> = ({ onClose, sessionTitle }) => {
-  const [note, setNote] = useState('');
-  const [noteId, setNoteId] = useState<string | null>(null);
+const AddNoteScreen: React.FC<AddNoteProps> = ({
+  onClose,
+  sessionTitle,
+  noteId,
+}) => {
+  const [note, setNote] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -62,25 +57,22 @@ const AddNoteScreen: React.FC<AddNoteProps> = ({ onClose, sessionTitle }) => {
     (async () => {
       try {
         setLoading(true);
-        const existing = await loadNote(sessionTitle);
 
-        if (existing) {
-          setNote(existing.content || "");
-          setNoteId(existing._id);
-        } else {
+        if (!noteId) {
           setNote("");
-          setNoteId(null);
+          return;
         }
-      
+
+        const existing = await loadNoteById(noteId);
+        setNote(existing?.content || "");
       } catch (e: any) {
         Alert.alert("Error", e.message || "Failed to load");
-      
       } finally {
         setLoading(false);
         setTimeout(() => inputRef.current?.focus(), 100);
       }
     })();
-  }, [sessionTitle]);
+  }, [noteId]);
 
   const handleDone = async () => {
     try {
@@ -91,55 +83,60 @@ const AddNoteScreen: React.FC<AddNoteProps> = ({ onClose, sessionTitle }) => {
         return;
       }
 
-      await saveNote(noteId, sessionTitle, note);
-      onClose();
+      if (!noteId) {
+        Alert.alert("Error", "Missing noteId");
+        return;
+      }
+
+      await updateNote(noteId, sessionTitle, note);
+
+      Alert.alert("Saved", "Notes saved successfully.", [
+        { text: "OK", onPress: onClose },
+      ]);
     } catch (e: any) {
       Alert.alert("Error", e.message || "Failed to save");
-    
     } finally {
       setSaving(false);
     }
   };
 
-  useEffect(() => {
-    const timer = setTimeout(() => inputRef.current?.focus(), 100);
-    return () => clearTimeout(timer);
-  }, []);
-
   return (
     <SafeAreaView className="flex-1 bg-primary">
       {/* HEADER SECTION */}
-      <KeyboardAvoidingView 
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="flex-1"
       >
         <View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-100 bg-white z-20">
-          <TouchableOpacity onPress={onClose} className="flex-row items-center">
+          <TouchableOpacity onPress={onClose} className="flex-row items-center" disabled={saving}>
             <ChevronLeft size={28} color="#000000" strokeWidth={2.5} />
             <Text className="font-bebas text-[#000000] text-2xl font-semibold ml-[-2px]">Notes</Text>
           </TouchableOpacity>
 
           {/* Spacing kept at mr-6 as you liked */}
-          <View className="flex-row items-center"> 
-            <TouchableOpacity activeOpacity={0.6} className="mr-6">
+          <View className="flex-row items-center">
+            <TouchableOpacity activeOpacity={0.6} className="mr-6" disabled={saving}>
               <ExternalLink size={24} color="#000000" strokeWidth={2} />
             </TouchableOpacity>
-            
-            <TouchableOpacity activeOpacity={0.6} className="mr-6">
+
+            <TouchableOpacity activeOpacity={0.6} className="mr-6" disabled={saving}>
               <SlidersHorizontal size={22} color="#000000" strokeWidth={2} />
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={handleDone} activeOpacity={0.6}>
-              <Text className="font-bebas text-[#000000] text-2xl font-bold">Done</Text>
+            <TouchableOpacity onPress={handleDone} activeOpacity={0.6} disabled={saving}>
+              {saving ? (
+                <ActivityIndicator size="small" color="#000000" />
+              ) : (
+                <Text className="font-bebas text-[#000000] text-2xl font-bold">Done</Text>
+              )}
             </TouchableOpacity>
           </View>
         </View>
 
         {/* CONTENT AREA WITH WATERMARK */}
         <View className="flex-1 relative">
-          {/* HORIZONTAL WATERMARK WITH SHADE */}
           <View className="absolute top-0 left-0 right-0 bottom-0 items-center justify-center pointer-events-none z-0">
-            <Text 
+            <Text
               style={styles.watermarkText}
               className="font-bebas text-4xl font-black text-black tracking-[4px]"
             >
@@ -169,7 +166,6 @@ const AddNoteScreen: React.FC<AddNoteProps> = ({ onClose, sessionTitle }) => {
   );
 };
 
-// Custom styles for the shaded watermark
 const styles = StyleSheet.create({
   watermarkText: {
     opacity: 0.06,
