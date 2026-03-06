@@ -59,10 +59,10 @@ const coachSchema = new mongoose.Schema({
         default: 0,
     },
 
-    // Current athletes
+    // Current athletes names
     currentAthletes: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Athlete',
+        type: String,
+        trim: true,
     }],
 
     // Maximum number of athletes can handle

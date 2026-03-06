@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   View, Text, ScrollView, Image, Pressable, StyleSheet, 
   Modal, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform 
@@ -18,7 +18,8 @@ export interface AthleteData {
 interface ProfileAthleteProps {
   data: AthleteData;
   onPressSessions: () => void;
-  // removed onPressProgress because we handle it internally now
+  onUpdateName: (name: string) => Promise<void>;
+  isSavingName?: boolean;
 }
 
 // --- SHARED HEXAGON BUTTON ---
@@ -38,23 +39,31 @@ const HexButton = ({ title, onPress, color, icon: Icon }: any) => {
   );
 };
 
-const ProfileAthlete = ({ data, onPressSessions }: ProfileAthleteProps) => {
-  const router = useRouter(); // <--- INITIALIZE ROUTER
-  
+const ProfileAthlete = ({
+  data,
+  onPressSessions,
+  onUpdateName,
+  isSavingName = false,
+}: ProfileAthleteProps) => {
+  const router = useRouter();
   const [sheetVisible, setSheetVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [displayName, setDisplayName] = useState(data.name);
-  
-  // Modal States
+
   const [isOptionsVisible, setIsOptionsVisible] = useState(false);
   const [isEditVisible, setIsEditVisible] = useState(false);
-  const [nameInput, setNameInput] = useState(displayName);
+  const [nameInput, setNameInput] = useState(data.name);
 
-  const handleSaveName = () => {
-    if (nameInput.trim()) {
-      setDisplayName(nameInput);
-      setIsEditVisible(false);
-    }
+  // Keep input updated
+  useEffect(() => {
+    setNameInput(data.name);
+  }, [data.name]);
+
+  //Update the name in the backend
+  const handleSaveName = async () => {
+    const trimmed = nameInput.trim();
+    if (!trimmed || isSavingName) return;
+    await onUpdateName(trimmed);
+    setIsEditVisible(false);
   };
 
   return (
@@ -69,7 +78,7 @@ const ProfileAthlete = ({ data, onPressSessions }: ProfileAthleteProps) => {
           />
 
           <TouchableOpacity 
-            onPress={() => { setNameInput(displayName); setIsOptionsVisible(true); }}
+            onPress={() => { setNameInput(data.name); setIsOptionsVisible(true); }}
             className="absolute top-12 right-5 bg-black/20 p-2.5 rounded-full"
           >
             <SlidersHorizontal size={24} color="white" strokeWidth={2} />
@@ -81,7 +90,8 @@ const ProfileAthlete = ({ data, onPressSessions }: ProfileAthleteProps) => {
 
           <View className="absolute bottom-6 left-6">
             <Text className="text-white text-xs font-bold uppercase tracking-widest opacity-90" style={styles.textShadow}>{data.role}</Text>
-            <Text className="text-white text-5xl font-bebas uppercase tracking-tighter" style={styles.textShadow}>{displayName}</Text>
+            {/* Render the athlete's name */}
+            <Text className="text-white text-5xl font-bebas uppercase tracking-tighter" style={styles.textShadow}>{data.name}</Text>
           </View>
         </View>
 
@@ -123,7 +133,12 @@ const ProfileAthlete = ({ data, onPressSessions }: ProfileAthleteProps) => {
               <Text className="font-bebas text-2xl font-black mb-6 italic uppercase">EDIT ATHLETE NAME</Text>
               <TextInput value={nameInput} onChangeText={setNameInput} className="border-2 border-[#F8FE11] rounded-2xl w-full p-4 text-center uppercase text-lg font-bold" autoFocus />
               <View className="w-full mt-6">
-                <HexButton title="SAVE" color="#F8FE11" onPress={handleSaveName} />
+                
+                <HexButton
+                  title={isSavingName ? "SAVING..." : "SAVE"}
+                  color="#F8FE11"
+                  onPress={handleSaveName}
+                />
                 <HexButton title="CANCEL" color="#9E9E9E" onPress={() => setIsEditVisible(false)} />
               </View>
             </View>
