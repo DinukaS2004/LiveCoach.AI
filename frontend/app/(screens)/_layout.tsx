@@ -46,6 +46,7 @@ export default function ScreensTabsLayout() {
           const shouldHideTabBar =
               currentRouteName.includes("splash") ||
               currentRouteName === "(profile)/sessions" ||
+              currentRouteName === "(profile)/prograssChart" ||
               currentRouteName === "(videoAnalyze)/analyze-result" ||
 
               options.tabBarVisible === false;
@@ -96,6 +97,7 @@ export default function ScreensTabsLayout() {
         <Tabs.Screen name="(splash)/index" options={{ href: null }} />
         <Tabs.Screen name="(splash)/splash" options={{ href: null }} />
         <Tabs.Screen name="(profile)/sessions" options={{ href: null }} />
+        <Tabs.Screen name="(profile)/prograssChart" options={{ href: null }} />
         <Tabs.Screen name="(tutorials)/viewVideo" options={{ href: null }} />
         <Tabs.Screen name="(tutorials)/sportOverview" options={{ href: null }} />
         <Tabs.Screen name="(browseCoach)/SportTabs" options={{ href: null }} />

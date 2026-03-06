@@ -59,7 +59,7 @@ const ProfileAthlete = ({ data, onPressSessions }: ProfileAthleteProps) => {
 
   return (
     <>
-      <ScrollView bounces={false} showsVerticalScrollIndicator={false} className="flex-1 bg-white">
+      <ScrollView bounces={false} showsVerticalScrollIndicator={false} className="flex-1">
         {/* Header Section */}
         <View className="h-[400px] w-full relative">
           <Image 
@@ -119,7 +119,7 @@ const ProfileAthlete = ({ data, onPressSessions }: ProfileAthleteProps) => {
       <Modal visible={isEditVisible} transparent animationType="slide">
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} className="flex-1">
           <TouchableOpacity className="flex-1 justify-center items-center bg-black/50 px-6" activeOpacity={1} onPress={() => setIsEditVisible(false)}>
-            <View className="bg-white w-full rounded-[35px] p-8 shadow-2xl items-center">
+            <View className=" w-full rounded-[35px] p-8 shadow-2xl items-center">
               <Text className="font-bebas text-2xl font-black mb-6 italic uppercase">EDIT ATHLETE NAME</Text>
               <TextInput value={nameInput} onChangeText={setNameInput} className="border-2 border-[#F8FE11] rounded-2xl w-full p-4 text-center uppercase text-lg font-bold" autoFocus />
               <View className="w-full mt-6">
