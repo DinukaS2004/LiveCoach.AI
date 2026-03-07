@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { 
-  View, Text, ScrollView, Image, Pressable, StyleSheet, 
+  View, Text, ScrollView, Image, Pressable, StyleSheet, ActivityIndicator,
   Modal, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform 
 } from 'react-native';
 import { 
@@ -17,10 +17,15 @@ export interface AthleteData {
 
 interface ProfileAthleteProps {
   data: AthleteData;
+  profileImage?: string | null;
   onPressSessions: () => void;
   onUpdateName: (name: string) => Promise<void>;
+  onUpdateProfileImage: (localUri: string) => Promise<void>;
   isSavingName?: boolean;
+  isSavingImage?: boolean;
 }
+
+const fallbackProfileImage = require("../../../assets/Profile/Fallback_A.jpg");
 
 // --- SHARED HEXAGON BUTTON ---
 const HexButton = ({ title, onPress, color, icon: Icon }: any) => {
@@ -41,13 +46,15 @@ const HexButton = ({ title, onPress, color, icon: Icon }: any) => {
 
 const ProfileAthlete = ({
   data,
+  profileImage,
   onPressSessions,
   onUpdateName,
+  onUpdateProfileImage,
   isSavingName = false,
+  isSavingImage = false,
 }: ProfileAthleteProps) => {
   const router = useRouter();
   const [sheetVisible, setSheetVisible] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const [isOptionsVisible, setIsOptionsVisible] = useState(false);
   const [isEditVisible, setIsEditVisible] = useState(false);
@@ -72,7 +79,7 @@ const ProfileAthlete = ({
         {/* Header Section */}
         <View className="h-[400px] w-full relative">
           <Image 
-            source={selectedImage ? { uri: selectedImage } : require("../../../assets/BrowseCoachImages/cricketCoach3.jpg")}
+            source={profileImage ? { uri: profileImage } : fallbackProfileImage}
             className="w-full h-full"
             resizeMode="cover"
           />
@@ -84,8 +91,17 @@ const ProfileAthlete = ({
             <SlidersHorizontal size={24} color="white" strokeWidth={2} />
           </TouchableOpacity>
           
-          <Pressable onPress={() => setSheetVisible(true)} className="absolute bottom-7 right-3 bg-white p-2.5 rounded-full shadow-md active:scale-95" style={{ elevation: 10, zIndex: 10 }}>
-            <Camera size={22} color="black" strokeWidth={2} />
+          <Pressable
+            disabled={isSavingImage}
+            onPress={() => setSheetVisible(true)}
+            className="absolute bottom-7 right-3 bg-white p-2.5 rounded-full shadow-md active:scale-95"
+            style={{ elevation: 10, zIndex: 10, opacity: isSavingImage ? 0.7 : 1 }}
+          >
+            {isSavingImage ? (
+              <ActivityIndicator size="small" color="black" />
+            ) : (
+              <Camera size={22} color="black" strokeWidth={2} />
+            )}
           </Pressable>
 
           <View className="absolute bottom-6 left-6">
@@ -146,7 +162,13 @@ const ProfileAthlete = ({
         </KeyboardAvoidingView>
       </Modal>
 
-      <ImagePickerSheet visible={sheetVisible} onClose={() => setSheetVisible(false)} onImageSelected={(uri) => setSelectedImage(uri)} />
+      <ImagePickerSheet
+        visible={sheetVisible}
+        onClose={() => setSheetVisible(false)}
+        onImageSelected={(uri) => {
+          void onUpdateProfileImage(uri);
+        }}
+      />
     </>
   );
 };

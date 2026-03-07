@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {Alert,View,Text,ScrollView,Image,Pressable,Modal,TouchableOpacity,TextInput,KeyboardAvoidingView,Platform,
+  ActivityIndicator,
 } from "react-native";
 import { MaterialIcons, Entypo } from "@expo/vector-icons";
 import { SlidersHorizontal, RotateCw, Trash2 } from "lucide-react-native";
@@ -15,35 +16,20 @@ export interface CoachData {
   role: "Coach";
   isVerified?: boolean;
   players?: Player[];
-  currentAthletes?: Player[];
 }
-
-const getCoachPlayers = (data: CoachData): Player[] => {
-  const merged = [...(data.currentAthletes ?? []), ...(data.players ?? [])];
-  const uniqueByName = new Map<string, Player>();
-
-  merged.forEach((player, index) => {
-    const normalizedName = (player?.name || "").trim().toUpperCase();
-    if (!normalizedName || uniqueByName.has(normalizedName)) {
-      return;
-    }
-
-    uniqueByName.set(normalizedName, {
-      id: player?.id || `player-${index}`,
-      name: normalizedName,
-    });
-  });
-
-  return Array.from(uniqueByName.values());
-};
 
 interface ProfileCoachProps {
   data: CoachData;
+  profileImage?: string | null;
   onPressPlayer: () => void;
   onUpdateName: (name: string) => Promise<void>; //Update name
   onUpdatePlayers: (players: Player[]) => Promise<void>; //Update players list
+  onUpdateProfileImage: (localUri: string) => Promise<void>;
   isSavingName?: boolean;
+  isSavingImage?: boolean;
 }
+
+const fallbackProfileImage = require("../../../assets/Profile/Fallback_C.jpg");
 //Hexbutton
 const HexButton = ({ title, onPress, color, icon: Icon }: any) => {
   const pointSize = 24;
@@ -99,19 +85,21 @@ const HexButton = ({ title, onPress, color, icon: Icon }: any) => {
 
 const ProfileCoach = ({
   data,
+  profileImage,
   onPressPlayer,
   onUpdateName,
   onUpdatePlayers,
+  onUpdateProfileImage,
   isSavingName = false,
+  isSavingImage = false,
 }: ProfileCoachProps) => {
   const [sheetVisible, setSheetVisible] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isOptionsVisible, setIsOptionsVisible] = useState(false);
   const [isEditVisible, setIsEditVisible] = useState(false);
   const [isAddPlayerVisible, setIsAddPlayerVisible] = useState(false);
   const [playerNameInput, setPlayerNameInput] = useState("");
   const [isSavingPlayers, setIsSavingPlayers] = useState(false);
-  const [players, setPlayers] = useState<Player[]>(getCoachPlayers(data));
+  const [players, setPlayers] = useState<Player[]>(data.players ?? []);
   const [nameInput, setNameInput] = useState(data.name);
 
   //Keep the name updated 
@@ -121,12 +109,8 @@ const ProfileCoach = ({
 
   // Keep the player list sync with the backend through parent
   useEffect(() => {
-    setPlayers(getCoachPlayers(data));
-  }, [data.players, data.currentAthletes]);
-
-  const handleImageSelected = (imageUri: string) => {
-    setSelectedImage(imageUri);
-  };
+    setPlayers(data.players ?? []);
+  }, [data.players]);
 
   const handleSaveName = async () => {
     const trimmed = nameInput.trim();
@@ -181,29 +165,35 @@ const ProfileCoach = ({
         <View className="h-[400px] w-full relative">
           <Image
             source={
-              selectedImage 
-                ? { uri: selectedImage }
-                : require("../../../assets/BrowseCoachImages/cricketCoach3.jpg")
+              profileImage
+                ? { uri: profileImage }
+                : fallbackProfileImage
             }
             className="w-full h-full"
             resizeMode="cover"
           />
           
           <Pressable
+            disabled={isSavingImage}
             onPress={() => setSheetVisible(true)}
             className="absolute bottom-7 right-3 bg-white p-2 rounded-full shadow-md active:scale-95"
             style={{
               elevation: 10,
               zIndex: 10,
+              opacity: isSavingImage ? 0.7 : 1,
             }}
             // pointerEvents="box-only"
           >
-            <MaterialIcons 
-              name="photo-camera" 
-              size={20} 
-              color="black"
-              pointerEvents="none"
-            />
+            {isSavingImage ? (
+              <ActivityIndicator size="small" color="black" />
+            ) : (
+              <MaterialIcons 
+                name="photo-camera" 
+                size={20} 
+                color="black"
+                pointerEvents="none"
+              />
+            )}
           </Pressable>
 
           <TouchableOpacity
@@ -272,7 +262,9 @@ const ProfileCoach = ({
         <ImagePickerSheet
           visible={sheetVisible}
           onClose={() => setSheetVisible(false)}
-          onImageSelected={handleImageSelected}
+          onImageSelected={(uri) => {
+            void onUpdateProfileImage(uri);
+          }}
         />
       )}
 
