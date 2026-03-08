@@ -16,8 +16,12 @@ const Index = () => {
   const [activeSport, setActiveSport] = useState<'cricket' | 'badminton'>('cricket');
   const [currentView, setCurrentView] = useState<'OVERVIEW' | 'LIST' | 'DETAIL' | 'FUNDAMENTALS'>('OVERVIEW');
   const [selectedTechnique, setSelectedTechnique] = useState('');
+  const [listScrollOffsets, setListScrollOffsets] = useState<Record<'cricket' | 'badminton', number>>({
+    cricket: 0,
+    badminton: 0,
+  });
 
-  //Layouteffect for prevent navbar from flickering (runs before screen is printed)
+  //for prevent navbar from flickering(runs before screen is printed)
   useLayoutEffect(() => {
     //safety messure
     if (navigation && typeof navigation.setParams === 'function') {
@@ -45,14 +49,21 @@ const Index = () => {
     setCurrentView('DETAIL');
   };
 
+  const handleRememberListScroll = (offset: number) => {
+    setListScrollOffsets((prev) => ({
+      ...prev,
+      [activeSport]: offset,
+    }));
+  };
+
   return (
     <View style={{ flex: 1 }}>
-      {/* 1. STARTING SCREEN */}
+      {/* overview */}
       {currentView === 'OVERVIEW' && (
         <SportOverview onNavigate={handleStartTutorial} />
       )}
 
-      {/* 2. THE SEARCHABLE LIST */}
+      {/*the search list */}
       {currentView === 'LIST' && (
         <ViewVideo 
           activeSport={activeSport}
@@ -60,10 +71,12 @@ const Index = () => {
           onBack={() => setCurrentView('OVERVIEW')}
           onSelect={handleSelectShot}
           onSelectFundamentals={handleSelectFundamentals}
+          initialScrollOffset={listScrollOffsets[activeSport]}
+          onRememberScroll={handleRememberListScroll}
         />
       )}
 
-      {/* 3. SHOT DETAILS (Difficulty, Risks, Video, etc.) */}
+      {/*shot details*/}
       {currentView === 'DETAIL' && (
         activeSport === 'cricket' ? (
           <CricketDetail 
@@ -78,7 +91,7 @@ const Index = () => {
         )
       )}
 
-      {/* 4. FUNDAMENTALS (Clean Layout, No Difficulty/Risks) */}
+      {/* fundamentals */}
       {currentView === 'FUNDAMENTALS' && (
         <FundamentalsDetail 
           sport={activeSport} 

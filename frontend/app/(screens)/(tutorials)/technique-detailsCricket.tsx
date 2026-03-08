@@ -209,7 +209,7 @@ const CricketDetail = ({ techniqueName, onBack }: any) => {
         onHoverOut={() => setIsHovered(false)}
         onPressIn={() => setIsHovered(true)}
         onPressOut={() => setIsHovered(false)}
-        className="w-full  aspect-video mb-6 rounded-lg overflow-hidden justify-center items-center bg-neutral-500"
+        className="w-full  aspect-video  rounded-lg overflow-hidden justify-center items-center bg-neutral-500"
       >
         <ImageBackground
           // Handles both local require() and web links (string)
@@ -219,11 +219,11 @@ const CricketDetail = ({ techniqueName, onBack }: any) => {
         >  
         {/* button turns red when hovering */}
           <View 
-            className={`w-16 h-11 justify-center items-center rounded-xl transition-colors duration-200 ${
-              isHovered ? 'bg-[#FF0000]' : 'bg-black'
+            className={`w-20 h-14 justify-center items-center rounded-xl transition-colors duration-200 ${
+              isHovered ? 'bg-[#FF0000]' : 'bg-neutral-700'
             }`}
           >
-            <Ionicons name="play" size={24} color="white" className="ml-1" />
+            <Ionicons name="play" size={35} color="white" className="ml-1" />
           </View>
 
         </ImageBackground>
@@ -233,8 +233,8 @@ const CricketDetail = ({ techniqueName, onBack }: any) => {
 
   
   const DetailSection = ({ label, content }: { label: string, content: string }) => (
-    <View className="mb-6">
-      <Text className="font-abeezee text-2xl text-primary-dark mb-1 opacity-90 mt-2">{label}</Text>
+    <View className="my-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+      <Text className="font-bebas text-2xl text-primary-dark mb-3">{label}</Text>
       <Text className="font-manrope text-base font-semibold text-neutral-900 leading-6 text-justify">
         {content}
       </Text>
@@ -243,21 +243,21 @@ const CricketDetail = ({ techniqueName, onBack }: any) => {
 
   return (
     <View className="flex-1 bg-primary pt-20">
-      <View className="py-4 pb-4 px-4 border-b border-gray-100 flex-row items-center">
-        <TouchableOpacity onPress={onBack} className="mr-3">
-          <Ionicons name="arrow-back" size={28} color="#150000" />
+      <View className=" pb-2 px-4 border-b border-gray-100 flex-row items-center">
+        <TouchableOpacity onPress={onBack} >
+          <Ionicons name="chevron-back" size={40} color="#150000" className='pt-1'/>
         </TouchableOpacity>
-        <Text className="font-bebas text-4xl text-primary-dark pt-1">{title}</Text>
+        <Text className="font-bebas text-4xl text-primary-dark pt-2">{title}</Text>
       </View>
 
-      <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}
+      <ScrollView className="flex-1 " showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 24, paddingBottom: 140 }}>
         
         {/* Degree of Difficulty */}
-        <View className="flex-row items-center mb-6">
-          <Text className="font-bebas text-2xl text-black mr-2">DEGREE OF DIFFICULTY:</Text>
+        <View className="flex-row items-center mb-4 px-2">
+          <Text className="font-bebas text-3xl text-primary-dark mr-4">DEGREE OF DIFFICULTY:</Text>
           <View className="bg-accent-yellow px-3 py-1 rounded-md">
-            <Text className="font-bold font-manrope text-base">{data.difficulty}</Text>
+            <Text className="font-bold font-manrope text-lg">{data.difficulty}</Text>
           </View>
         </View>
 
@@ -268,8 +268,8 @@ const CricketDetail = ({ techniqueName, onBack }: any) => {
         <DetailSection label="WHEN TO USE" content={data.whenToUse} />
 
         {/* Best component */}
-        <View className="my-6 p-4 bg-gray-50 rounded-2xl border border-gray-100">
-          <Text className="font-bebas text-xl text-primary-dark mb-3">BEST EXPONENTS</Text>
+        <View className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
+          <Text className="font-bebas text-2xl text-primary-dark mb-3">BEST EXPONENTS</Text>
           {data.exponents !== 'N/A' ? (
             data.exponents.split(',').map((exponent: string, index: number) => (
               <View key={index} className="flex-row items-start mb-2">

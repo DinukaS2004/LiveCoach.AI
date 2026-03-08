@@ -30,8 +30,8 @@ const FundamentalsDetail = ({ sport, onBack }: any) => {
     <View className="flex-1 bg-primary pt-16">
       {/*Header */}
       <View className="py-4 px-4 border-b border-gray-100 flex-row items-center">
-        <TouchableOpacity onPress={onBack} className="mr-3">
-          <Ionicons name="arrow-back" size={40} color="#150000"  />
+        <TouchableOpacity onPress={onBack} className="mt-2">
+          <Ionicons name="chevron-back" size={40} color="#150000"  />
         </TouchableOpacity>
         <Text className="font-bebas text-4xl text-primary-dark pt-3">{data.title}</Text>
       </View>
