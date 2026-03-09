@@ -5,10 +5,14 @@ import {
 } from 'react-native';
 import { 
   ChevronRight, Camera, SlidersHorizontal, 
-  RotateCw, LogOut // <--- Changed Trash2 to LogOut here
+  RotateCw, LogOut 
 } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import ImagePickerSheet from '../../components/ImagePickerSheet';
+
+// ---> IMPORT YOUR AUTH CONTEXT HERE <---
+// Note: Adjust this import path if your AuthContext is saved in a different folder
+import { useAuth } from '../../context/AuthContext'; 
 
 export interface AthleteData {
   name: string;
@@ -54,8 +58,11 @@ const ProfileAthlete = ({
   isSavingImage = false,
 }: ProfileAthleteProps) => {
   const router = useRouter();
-  const [sheetVisible, setSheetVisible] = useState(false);
+  
+  // ---> INITIALIZE LOGOUT FROM YOUR CONTEXT <---
+  const { logout } = useAuth(); 
 
+  const [sheetVisible, setSheetVisible] = useState(false);
   const [isOptionsVisible, setIsOptionsVisible] = useState(false);
   const [isEditVisible, setIsEditVisible] = useState(false);
   const [nameInput, setNameInput] = useState(data.name);
@@ -65,7 +72,7 @@ const ProfileAthlete = ({
     setNameInput(data.name);
   }, [data.name]);
 
-  //Update the name in the backend
+  // Update the name in the backend
   const handleSaveName = async () => {
     const trimmed = nameInput.trim();
     if (!trimmed || isSavingName) return;
@@ -73,11 +80,16 @@ const ProfileAthlete = ({
     setIsEditVisible(false);
   };
 
-  // Handle Logout Logic
-  const handleLogout = () => {
-    setIsOptionsVisible(false);
-    // Add your actual logout logic here (e.g., clearing async storage, updating auth context)
-    // router.replace('/login');
+  // ---> UPDATED LOGOUT LOGIC <---
+  const handleLogout = async () => {
+    setIsOptionsVisible(false); // Close the modal first
+    try {
+      await logout(); // Calls the Firebase signout from your context
+      // If your app doesn't automatically redirect on auth state change, force it to login screen:
+      // router.replace('/login'); 
+    } catch (error) {
+      console.error("Failed to log out:", error);
+    }
   };
 
   return (
@@ -141,7 +153,7 @@ const ProfileAthlete = ({
         <TouchableOpacity className="flex-1 justify-center items-center bg-black/60 px-8" activeOpacity={1} onPress={() => setIsOptionsVisible(false)}>
           <View className="bg-white w-full rounded-[40px] p-10 items-center shadow-2xl">
             <HexButton title="EDIT NAME" color="#F8FE11" icon={RotateCw} onPress={() => { setIsOptionsVisible(false); setIsEditVisible(true); }} />
-            {/* --- THIS IS THE FIX: Updated to LOGOUT and LogOut icon --- */}
+            {/* LOGOUT BUTTON IS NOW CONNECTED */}
             <HexButton title="LOGOUT" color="#FF3B3B" icon={LogOut} onPress={handleLogout} />
           </View>
         </TouchableOpacity>
