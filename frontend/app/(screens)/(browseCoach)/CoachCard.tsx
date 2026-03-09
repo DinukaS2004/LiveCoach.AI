@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
+import { Feather } from '@expo/vector-icons'; 
 
 type CoachCardProps = {
   name: string;
@@ -12,44 +13,46 @@ type CoachCardProps = {
 
 const CoachCard = ({ name, location, price, billingCycle, image, onContactPress }: CoachCardProps) => {
   return (
-    <View className="bg-white rounded-2xl mt-6 border border-neutral-500 overflow-hidden">
+    <View className="bg-white rounded-3xl mb-5 flex-row p-3 shadow-xl shadow-black/2">
+      {/* Left: Rounded Square Image */}
       <Image
         source={image}
-        className="w-full h-32 bg-primary-light"
+        className="w-24 h-24 rounded-2xl bg-neutral-100 mt-2"
         resizeMode="cover"
       />
 
-      <View className="p-3 flex-row items-start">
-        <View className="flex-1 pr-2">
-          <Text className="font-manrope text-base font-bold text-primary-dark">
-            {name}
-          </Text>
-
-          <Text className="font-manrope text-sm text-neutral-700 mt-1">
-            {location}
-          </Text>
-
-          <Text className="font-manrope text-sm text-neutral-800 mt-1">
-            {price} LKR / {billingCycle}
-          </Text>
+      {/* Right: Info and Button Container */}
+      <View className="flex-1 ml-5 justify-between mt-2">
+        <View>
+          <Text className="font-manrope text-xl font-bold text-black leading-tight">{name}</Text>
+          {/* Darker Gray for visibility */}
+          <Text className="font-manrope text-sm text-neutral-700 mt-1">{location}</Text>
+          <View className="flex-row items-baseline mt-2">
+            <Text className="font-manrope text-lg font-extrabold text-black">{price} LKR</Text>
+            <Text className="font-manrope text-xs font-semibold text-neutral-800 ml-1"> / {billingCycle}</Text>
+          </View>
         </View>
 
-        <TouchableOpacity
-          className="flex-row items-center self-start active:opacity-80"
-          accessibilityRole="button"
+        {/* Larger Rounded Contact Button at the bottom right */}
+        <TouchableOpacity 
           onPress={onContactPress}
+          activeOpacity={0.8}
+          className="bg-[#F8FE11] self-end mr-3  flex-row items-center justify-center gap-2 px-6 py-3 rounded-xl shadow-lg shadow-[#EDF856]/40"
         >
-          <View className="w-0 h-0 border-t-[18px] border-t-transparent border-b-[18px] border-b-transparent border-r-[12px] border-r-accent-yellow" />
-          <View className="h-[36px] justify-center items-center px-5 bg-accent-yellow">
-            <Text className="font-manrope font-extrabold text-primary-dark uppercase tracking-tighter">
+
+            <Feather name="phone" size={16} color="black" />
+            <Text 
+              className="text-black text-base" 
+              style={{ fontWeight: '700', letterSpacing: 0.2 }}
+            >
               Contact
             </Text>
-          </View>
-          <View className="w-0 h-0 border-t-[18px] border-t-transparent border-b-[18px] border-b-transparent border-l-[12px] border-l-accent-yellow" />
+          
         </TouchableOpacity>
       </View>
     </View>
   );
 };
+
 
 export default CoachCard;

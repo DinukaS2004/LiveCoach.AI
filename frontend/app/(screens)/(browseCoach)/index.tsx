@@ -91,56 +91,70 @@ const Index = () => {
   const visibleCoaches = coaches.filter(c => c.sport === selectedSport);
 
   return (
-    <SafeAreaView className="flex-1 bg-primary-light">
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <View className="px-4 py-4 pt-6">
-          <Text className="font-bebas text-4xl font-bold text-primary-dark">COACH GIGS</Text>
-          <View className="mt-4"><SportTabs value={selectedSport} onSportChange={setSelectedSport} /></View>
+  <SafeAreaView className="flex-1 bg-primary-light">
+    {/* Fixed Header Section */}
+    <View className="px-4 py-4 pt-6">
+      <Text className="font-bebas text-4xl font-bold text-primary-dark">
+        COACH GIGS
+      </Text>
 
-          {/* Coach-Only UI: Toggle between Card and Button */}
-          {userRole === 'coach' && (
-            <View>
-              {hasExistingGig ? (
-                <MyGigButton onPress={() => setIsCreateModalVisible(true)} /> 
-              ) : (
-                <CreateGigCard onPress={() => setIsCreateModalVisible(true)} />
-              )}
-            </View>
-          )}
+      <View className="mt-4">
+        <SportTabs value={selectedSport} onSportChange={setSelectedSport} />
+      </View>
 
-          {loading ? (
-            <View className="mt-20 justify-center items-center">
-              <ActivityIndicator size="large" color="#facc15" />
-            </View>
+      {userRole === 'coach' && (
+        <View>
+          {hasExistingGig ? (
+            <MyGigButton onPress={() => setIsCreateModalVisible(true)} />
           ) : (
-            <View className="mt-4 flex-row flex-wrap justify-between">
-              {visibleCoaches.map(coach => (
-                <View key={coach.id} className="w-[48%] mb-4">
-                  <CoachCard 
-                    {...coach} 
-                    onContactPress={() => setSelectedCoach(coach)} 
-                    image={coach.sport === 'Cricket' ? require('../../../assets/BrowseCoachImages/cricketCoach1.png') : require('../../../assets/BrowseCoachImages/badmintonCoach1.jpg')} 
-                  />
-                </View>
-              ))}
-            </View>
+            <CreateGigCard onPress={() => setIsCreateModalVisible(true)} />
           )}
         </View>
-      </ScrollView>
+      )}
+    </View>
 
-      <CoachContactModal visible={!!selectedCoach} coach={selectedCoach} onClose={() => setSelectedCoach(null)} />
-      
-      {/* Passing existingGig details into the modal */}
-      <CreateGigModal 
-        visible={isCreateModalVisible} 
-        existingGig={myExistingGig} 
-        onClose={() => { 
-          setIsCreateModalVisible(false); 
-          fetchData(); 
-        }} 
-      />
-    </SafeAreaView>
-  );
+    {/* Scrollable List Section */}
+    {loading ? (
+      <View className="mt-20 justify-center items-center">
+        <ActivityIndicator size="large" color="#facc15" />
+      </View>
+    ) : (
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 8, paddingBottom: 30 }}
+      >
+        {visibleCoaches.map((coach) => (
+          <View key={coach.id} className="w-full">
+            <CoachCard
+              {...coach}
+              onContactPress={() => setSelectedCoach(coach)}
+              image={
+                coach.sport === 'Cricket'
+                  ? require('../../../assets/BrowseCoachImages/cricketCoach1.png')
+                  : require('../../../assets/BrowseCoachImages/badmintonCoach1.jpg')
+              }
+            />
+          </View>
+        ))}
+      </ScrollView>
+    )}
+
+    <CoachContactModal
+      visible={!!selectedCoach}
+      coach={selectedCoach}
+      onClose={() => setSelectedCoach(null)}
+    />
+
+    <CreateGigModal
+      visible={isCreateModalVisible}
+      existingGig={myExistingGig}
+      onClose={() => {
+        setIsCreateModalVisible(false);
+        fetchData();
+      }}
+    />
+  </SafeAreaView>
+);
 };
 
 export default Index;
