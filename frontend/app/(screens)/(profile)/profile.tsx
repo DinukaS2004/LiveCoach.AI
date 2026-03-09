@@ -5,9 +5,9 @@ import {
 } from 'react-native';
 import { 
   ChevronRight, Camera, SlidersHorizontal, 
-  RotateCw, Trash2 
+  RotateCw, LogOut // <--- Changed Trash2 to LogOut here
 } from 'lucide-react-native';
-import { useRouter } from 'expo-router'; // <--- IMPORT ROUTER
+import { useRouter } from 'expo-router';
 import ImagePickerSheet from '../../components/ImagePickerSheet';
 
 export interface AthleteData {
@@ -66,6 +66,13 @@ const ProfileAthlete = ({
     setIsEditVisible(false);
   };
 
+  // Handle Logout Logic
+  const handleLogout = () => {
+    setIsOptionsVisible(false);
+    // Add your actual logout logic here (e.g., clearing async storage, updating auth context)
+    // router.replace('/login');
+  };
+
   return (
     <>
       <ScrollView bounces={false} showsVerticalScrollIndicator={false} className="flex-1">
@@ -101,10 +108,8 @@ const ProfileAthlete = ({
             <ChevronRight size={22} color="#ADABAB" strokeWidth={1.5} />
           </Pressable>
           
-          {/* --- THIS IS THE FIX --- */}
           <Pressable 
             onPress={() => {
-               // This path matches your folder structure exactly: app/(screens)/(profile)/prograssChart.tsx
                router.push("/(screens)/(profile)/prograssChart" as any); 
             }}
             className="px-4 py-6 border-b border-neutral-100 flex-row justify-between items-center active:opacity-50"
@@ -120,7 +125,8 @@ const ProfileAthlete = ({
         <TouchableOpacity className="flex-1 justify-center items-center bg-black/60 px-8" activeOpacity={1} onPress={() => setIsOptionsVisible(false)}>
           <View className="bg-white w-full rounded-[40px] p-10 items-center shadow-2xl">
             <HexButton title="EDIT NAME" color="#F8FE11" icon={RotateCw} onPress={() => { setIsOptionsVisible(false); setIsEditVisible(true); }} />
-            <HexButton title="DELETE PROFILE" color="#FF3B3B" icon={Trash2} onPress={() => setIsOptionsVisible(false)} />
+            {/* --- THIS IS THE FIX: Updated to LOGOUT and LogOut icon --- */}
+            <HexButton title="LOGOUT" color="#FF3B3B" icon={LogOut} onPress={handleLogout} />
           </View>
         </TouchableOpacity>
       </Modal>
