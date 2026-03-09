@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import {Alert,View,Text,ScrollView,Image,Pressable,Modal,TouchableOpacity,TextInput,KeyboardAvoidingView,Platform,
-  ActivityIndicator,
+import {
+  Alert, View, Text, ScrollView, Image, Pressable, Modal, 
+  TouchableOpacity, TextInput, KeyboardAvoidingView, Platform, ActivityIndicator,
 } from "react-native";
 import { MaterialIcons, Entypo } from "@expo/vector-icons";
-import { SlidersHorizontal, RotateCw, Trash2 } from "lucide-react-native";
+import { SlidersHorizontal, RotateCw, LogOut } from "lucide-react-native"; // <--- Imported LogOut
 import ImagePickerSheet from "../../components/ImagePickerSheet";
 
 export interface Player {
@@ -22,16 +23,17 @@ interface ProfileCoachProps {
   data: CoachData;
   profileImage?: string | null;
   onPressPlayer: () => void;
-  onUpdateName: (name: string) => Promise<void>; //Update name
-  onUpdatePlayers: (players: Player[]) => Promise<void>; //Update players list
+  onUpdateName: (name: string) => Promise<void>; 
+  onUpdatePlayers: (players: Player[]) => Promise<void>; 
   onUpdateProfileImage: (localUri: string | null) => Promise<void>;
-  onLogout: () => Promise<void>;
+  onLogout: () => Promise<void>; // Prop handles the context logout
   isSavingName?: boolean;
   isSavingImage?: boolean;
 }
 
 const fallbackProfileImage = require("../../../assets/Profile/fallback_Coach.jpg");
-//Hexbutton
+
+// --- SHARED HEXAGON BUTTON ---
 const HexButton = ({ title, onPress, color, icon: Icon }: any) => {
   const pointSize = 24;
   return (
@@ -42,8 +44,7 @@ const HexButton = ({ title, onPress, color, icon: Icon }: any) => {
     >
       <View className="flex-row items-center justify-center">
         <View
-          style={{ width: 0, height: 0, borderTopWidth: pointSize, borderTopColor: "transparent", borderBottomWidth: pointSize, borderBottomColor: "transparent", borderRightWidth: pointSize, borderRightColor: color,
-          }}
+          style={{ width: 0, height: 0, borderTopWidth: pointSize, borderTopColor: "transparent", borderBottomWidth: pointSize, borderBottomColor: "transparent", borderRightWidth: pointSize, borderRightColor: color }}
         />
         <View
           style={{ backgroundColor: color, height: pointSize * 2 }}
@@ -59,15 +60,12 @@ const HexButton = ({ title, onPress, color, icon: Icon }: any) => {
           )}
         </View>
         <View
-          style={{
-            width: 0, height: 0, borderTopWidth: pointSize, borderTopColor: "transparent", borderBottomWidth: pointSize, borderBottomColor: "transparent", borderLeftWidth: pointSize, borderLeftColor: color,
-          }}
+          style={{ width: 0, height: 0, borderTopWidth: pointSize, borderTopColor: "transparent", borderBottomWidth: pointSize, borderBottomColor: "transparent", borderLeftWidth: pointSize, borderLeftColor: color }}
         />
       </View>
     </TouchableOpacity>
   );
 };
-
 
 const ProfileCoach = ({
   data,
@@ -76,6 +74,7 @@ const ProfileCoach = ({
   onUpdateName,
   onUpdatePlayers,
   onUpdateProfileImage,
+  onLogout,
   isSavingName = false,
   isSavingImage = false,
 }: ProfileCoachProps) => {
@@ -88,12 +87,12 @@ const ProfileCoach = ({
   const [players, setPlayers] = useState<Player[]>(data.players ?? []);
   const [nameInput, setNameInput] = useState(data.name);
 
-  //Keep the name updated 
+  // Keep the name updated 
   useEffect(() => {
     setNameInput(data.name);
   }, [data.name]);
 
-  // Keep the player list sync with the backend through parent
+  // Keep the player list synced
   useEffect(() => {
     setPlayers(data.players ?? []);
   }, [data.players]);
@@ -105,7 +104,7 @@ const ProfileCoach = ({
     setIsEditVisible(false);
   };
 
-  //Add and check players
+  // Add and check players
   const handleAddPlayer = async () => {
     const trimmed = playerNameInput.trim().toUpperCase();
     if (!trimmed || isSavingPlayers) return;
@@ -122,7 +121,6 @@ const ProfileCoach = ({
     const previousPlayers = players;
     const nextPlayers = [...players, newPlayer];
 
-    //Update the UI immediately and then go through backend
     setPlayers(nextPlayers);
     setIsSavingPlayers(true);
 
@@ -138,6 +136,16 @@ const ProfileCoach = ({
       );
     } finally {
       setIsSavingPlayers(false);
+    }
+  };
+
+  // ---> ADDED LOGOUT HANDLER <---
+  const handleLogoutClick = async () => {
+    setIsOptionsVisible(false);
+    try {
+      await onLogout();
+    } catch (error) {
+      console.error("Logout failed:", error);
     }
   };
 
@@ -168,7 +176,6 @@ const ProfileCoach = ({
               zIndex: 10,
               opacity: isSavingImage ? 0.7 : 1,
             }}
-            // pointerEvents="box-only"
           >
             {isSavingImage ? (
               <ActivityIndicator size="small" color="black" />
@@ -192,7 +199,7 @@ const ProfileCoach = ({
             <SlidersHorizontal size={24} color="white" strokeWidth={2} />
           </TouchableOpacity>
 
-          <View className="absolute bottom-0 left-0 right-0  p-6">
+          <View className="absolute bottom-0 left-0 right-0 p-6">
             <Text className="text-white text-xs font-bold uppercase tracking-widest opacity-80">
               {data.role}
             </Text>
@@ -221,6 +228,7 @@ const ProfileCoach = ({
             <Text className="text-white text-sm font-manrope font-bold uppercase">+ Add Player</Text>
           </TouchableOpacity>
         </View>
+
         <View className="px-4">
           {players.map((player) => (
             <Pressable
@@ -258,6 +266,7 @@ const ProfileCoach = ({
         />
       )}
 
+      {/* Options Modal */}
       <Modal visible={isOptionsVisible} transparent animationType="fade">
         <TouchableOpacity
           className="flex-1 justify-center items-center bg-black/60 px-8"
@@ -274,17 +283,18 @@ const ProfileCoach = ({
                 setIsEditVisible(true);
               }}
             />
+            {/* ---> CHANGED TO LOGOUT <--- */}
             <HexButton
-              title="DELETE PROFILE"
+              title="LOGOUT"
               color="#FF3B3B"
-              icon={Trash2}
-              onPress={() => setIsOptionsVisible(false)}
+              icon={LogOut}
+              onPress={handleLogoutClick}
             />
           </View>
         </TouchableOpacity>
       </Modal>
 
-        {/* Edit Name Modal */}
+      {/* Edit Name Modal */}
       <Modal visible={isEditVisible} transparent animationType="slide">
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
