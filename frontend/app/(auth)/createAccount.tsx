@@ -16,8 +16,13 @@ import { Feather } from "@expo/vector-icons";
 import ButtonBlack from "@/app/components/buttonBlack";
 import { useRouter } from "expo-router";
 import { useRequireSignupRole } from "@/app/hooks/useRequireSignupRole";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { auth } from "@/lib/firebase";
+import { api, authHeaders } from "@/lib/api";
+import { clearSignupRole } from "@/lib/storage";
 import { Picker } from "@react-native-picker/picker";
 import PasswordInput from "../components/PasswordInput";
+import SuccessAlert from "../components/SuccessAlert";
 import { useAuth } from "@/app/context/AuthContext";
 
 type ExperienceLevel =
@@ -67,12 +72,15 @@ const PasswordRule = ({
 
 const CreateAccount = () => {
   const router = useRouter();
+  const { refreshUser } = useAuth();
   const loadingRole = useRequireSignupRole("athlete");
-  const { registerAthlete, loading } = useAuth();
 
   const [isChecked, setIsChecked] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
   const [passwordTouched, setPasswordTouched] = useState(false);
+  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   const SPORT_OPTIONS = ["Badminton", "Cricket"] as const;
   const [sports, setSports] = useState<string[]>([]);
@@ -120,7 +128,7 @@ const CreateAccount = () => {
     return (
         firstName.trim() !== "" &&
         lastName.trim() !== "" &&
-        emailRegex.test(email.trim()) &&
+        emailRegex.test(email) &&
         isPasswordValid &&
         validAge &&
         sports.length > 0 &&
@@ -142,23 +150,55 @@ const CreateAccount = () => {
       return;
     }
 
+    setLoading(true);
+
     try {
-      const profile = await registerAthlete({
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email,
-        password: formData.password,
-        age: Number(formData.age),
-        sports,
-        experienceLevel: formData.experienceLevel,
+      const sportString = [...sports].sort().join(",");
+
+      const cred = await createUserWithEmailAndPassword(
+          auth,
+          formData.email.trim(),
+          formData.password,
+      );
+
+      await updateProfile(cred.user, {
+        displayName: `${formData.firstName} ${formData.lastName}`,
       });
 
-      if (!profile) {
-        Alert.alert("Sign up failed", "Could not load user profile.");
-        return;
-      }
+      const token = await cred.user.getIdToken(true);
 
-      router.replace("/(screens)/(profile)");
+      await api.post(
+      "/api/auth/register",
+      {
+        firebaseUid: cred.user.uid,
+        email: formData.email.trim(),
+        firstName: formData.firstName.trim(),
+        lastName: formData.lastName.trim(),
+        role: "athlete",
+        authProvider: "email",
+        athleteData: {
+          sport: sportString,
+          age: Number(formData.age),
+          experienceLevel: formData.experienceLevel,
+          bio: "",
+          goals: [],
+        },
+      },
+      { headers: await authHeaders(token) },
+    );
+
+      await api.post(
+          "/api/auth/complete-onboarding",
+          { role: "athlete" },
+          { headers: await authHeaders(token) },
+      );
+
+      await clearSignupRole();
+      await refreshUser();
+
+      setSuccessMessage("Account created successfully");
+      setShowSuccessAlert(true);
+
     } catch (e: any) {
       console.log("SIGNUP FAILED", {
         message: e?.message,
@@ -170,6 +210,8 @@ const CreateAccount = () => {
           "Sign up failed",
           e?.response?.data?.message || e?.message || "Unknown error",
       );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -183,6 +225,17 @@ const CreateAccount = () => {
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View className="flex-1 bg-white">
+            {/* Success Alert */}
+          <SuccessAlert
+            visible={showSuccessAlert}
+            message={successMessage}
+            autoHide={true}
+            duration={3000}
+            onHide={() => {
+              setShowSuccessAlert(false)
+              router.replace("/(screens)/(profile)");
+            }}
+          />
             <ScrollView
                 contentContainerStyle={{ flexGrow: 1 }}
                 showsVerticalScrollIndicator={false}
@@ -378,26 +431,39 @@ const CreateAccount = () => {
                     })}
                   </View>
 
-                  <View className="bg-gray-100 rounded-lg overflow-hidden">
-                    <Text className="text-sm text-neutral-700 mt-3 ml-4 mb-1">
-                      Experience Level
-                    </Text>
+                  <View className="mb-2">
+  <Text className="text-sm text-neutral-700 mb-2 ml-1 font-medium">
+    Experience Level
+  </Text>
 
-                    <Picker
-                        selectedValue={formData.experienceLevel}
-                        onValueChange={(val) =>
-                            setFormData({
-                              ...formData,
-                              experienceLevel: val as ExperienceLevel,
-                            })
-                        }
-                    >
-                      <Picker.Item label="Beginner" value="beginner" />
-                      <Picker.Item label="Intermediate" value="intermediate" />
-                      <Picker.Item label="Advanced" value="advanced" />
-                      <Picker.Item label="Professional" value="professional" />
-                    </Picker>
-                  </View>
+  <View className="bg-gray-100 rounded-2xl border border-gray-200 overflow-hidden">
+    <View className="flex-row items-center justify-between px-4 pt-3">
+      <Text className="text-xs uppercase tracking-wide text-neutral-500 font-semibold">
+        Select your level
+      </Text>
+      <Feather name="chevron-down" size={18} color="#6B7280" />
+    </View>
+
+    <Picker
+      selectedValue={formData.experienceLevel}
+      onValueChange={(val) =>
+        setFormData({
+          ...formData,
+          experienceLevel: val as ExperienceLevel,
+        })
+      }
+      style={{
+        color: "#111827",
+        marginTop: -6,
+      }}
+    >
+      <Picker.Item label="Beginner" value="beginner" />
+      <Picker.Item label="Intermediate" value="intermediate" />
+      <Picker.Item label="Advanced" value="advanced" />
+      <Picker.Item label="Professional" value="professional" />
+    </Picker>
+  </View>
+</View>
 
                   <Text className="text-xs text-neutral-500 mt-2 ml-1">
                     Select one or both. (Badminton / Cricket)
@@ -413,9 +479,7 @@ const CreateAccount = () => {
                               : "bg-white border-gray-300"
                       }`}
                   >
-                    {isChecked && (
-                        <Feather name="check" size={16} color="white" />
-                    )}
+                    {isChecked && <Feather name="check" size={16} color="white" />}
                   </TouchableOpacity>
 
                   <Text className="flex-1 text-sm text-neutral-700">

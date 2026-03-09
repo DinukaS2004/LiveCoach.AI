@@ -21,12 +21,17 @@ import { auth } from "@/lib/firebase";
 import { api, authHeaders } from "@/lib/api";
 import { clearSignupRole } from "@/lib/storage";
 import PasswordInput from "../components/PasswordInput";
+import SuccessAlert from "../components/SuccessAlert";
+import { useAuth } from "@/app/context/AuthContext";
 
 type CoachSport = "Badminton" | "Cricket";
 
 const getVerified = () => {
   const router = useRouter();
+  const { refreshUser } = useAuth();
   const loadingRole = useRequireSignupRole("coach");
+  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   const [isChecked, setIsChecked] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -126,8 +131,11 @@ const getVerified = () => {
       );
 
       // 5) Clear signup role + go to app
-      await clearSignupRole();
-      router.replace("/(screens)/(profile)");
+     await clearSignupRole();
+    await refreshUser();
+
+    setSuccessMessage("Account created successfully");
+    setShowSuccessAlert(true);
     } catch (e: any) {
       console.log("COACH SIGNUP FAILED", {
         message: e?.message,
@@ -147,6 +155,16 @@ const getVerified = () => {
 
   return (
     <View className="flex-1 bg-white">
+      <SuccessAlert
+        visible={showSuccessAlert}
+        message={successMessage}
+        autoHide={true}
+        duration={3000}
+        onHide={() => {
+    setShowSuccessAlert(false);
+    router.replace("/(screens)/(profile)");
+  }}
+/>
       <ScrollView
         contentContainerStyle={{ flexGrow: 1 }}
         showsVerticalScrollIndicator={false}
