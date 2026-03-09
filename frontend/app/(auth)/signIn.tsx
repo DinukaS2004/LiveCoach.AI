@@ -13,6 +13,7 @@ import ButtonGray from "@/app/components/buttonGray";
 import PasswordInput from "@/app/components/PasswordInput";
 import { useRouter } from "expo-router";
 import OtpPopup from "../components/OtpPopUp";
+import SuccessAlert from "../components/SuccessAlert";
 import { useAuth } from "@/app/context/AuthContext";
 
 const SignIn = () => {
@@ -20,6 +21,10 @@ const SignIn = () => {
   const { login, loading } = useAuth();
 
   const [showOtp, setShowOtp] = useState(false);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [nextRoute, setNextRoute] = useState<string | null>(null);
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -49,16 +54,23 @@ const SignIn = () => {
         return;
       }
 
+      let route = "/(screens)/(profile)";
+      let message = "Login successful";
+
       if (profile.isFirstTimeUser) {
-        router.replace("/(auth)");
-        return;
+        route = "/(auth)";
+        message = "Welcome! Let's get started.";
+      } else if (profile.role === "coach") {
+        route = "/(screens)/(profile)";
+        message = "Welcome back, Coach!";
+      } else {
+        route = "/(screens)/(profile)";
+        message = "Welcome back!";
       }
 
-      if (profile.role === "coach") {
-        router.replace("/(screens)/(profile)");
-      } else {
-        router.replace("/(screens)/(profile)");
-      }
+      setSuccessMessage(message);
+      setNextRoute(route);
+      setShowSuccessPopup(true);
     } catch (e: any) {
       console.log("LOGIN FAILED", {
         message: e?.message,
@@ -73,6 +85,18 @@ const SignIn = () => {
 
   return (
       <View className="flex-1 bg-white">
+        <SuccessAlert
+            visible={showSuccessPopup}
+            message={successMessage}
+            onHide={() => {
+              setShowSuccessPopup(false);
+
+              if (nextRoute) {
+                router.replace(nextRoute as any);
+              }
+            }}
+        />
+
         <ScrollView
             contentContainerStyle={{ flexGrow: 1 }}
             showsVerticalScrollIndicator={false}
