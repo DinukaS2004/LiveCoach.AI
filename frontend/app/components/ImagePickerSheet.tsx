@@ -18,6 +18,8 @@ interface Props {
   visible: boolean;
   onClose: () => void;
   onImageSelected: (imageUri: string) => void;
+  onRemoveImage?: () => void;
+  canRemoveImage?: boolean;
   onVisibilityChange?: (visible: boolean) => void;
 }
 
@@ -25,6 +27,8 @@ export default function ImagePickerSheet({
   visible,
   onClose,
   onImageSelected,
+  onRemoveImage,
+  canRemoveImage = false,
   onVisibilityChange,
 }: Props) {
   const translateY = useRef(new Animated.Value(height)).current;
@@ -106,6 +110,29 @@ export default function ImagePickerSheet({
     }
   };
 
+  const handleRemove = () => {
+    if (!onRemoveImage) return;
+
+    Alert.alert(
+      "Remove Profile Picture",
+      "Are you sure you want to remove your current profile picture?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Remove",
+          style: "destructive",
+          onPress: () => {
+            onRemoveImage();
+            onClose();
+          },
+        },
+      ],
+    );
+  };
+
   if (!visible) return null;
 
   return (
@@ -177,6 +204,26 @@ export default function ImagePickerSheet({
             </View>
             <MaterialIcons name="chevron-right" size={24} color="#9CA3AF" />
           </Pressable>
+
+          {canRemoveImage && onRemoveImage && (
+            <Pressable
+              onPress={handleRemove}
+              className="flex-row items-center bg-gray-50 rounded-2xl p-4 mb-3 active:bg-red-100 active:scale-[0.98]"
+            >
+              <View className="w-12 h-12 bg-red-100 rounded-full items-center justify-center">
+                <MaterialIcons name="delete-outline" size={24} color="#EF4444" />
+              </View>
+              <View className="flex-1 ml-4">
+                <Text className="text-base font-semibold text-red-600">
+                  Remove Photo
+                </Text>
+                <Text className="text-sm text-red-400 mt-0.5">
+                  Revert to the default profile image
+                </Text>
+              </View>
+              <MaterialIcons name="chevron-right" size={24} color="#FCA5A5" />
+            </Pressable>
+          )}
 
           <ButtonGray title="Cancel" onPress={onClose} />
         </View>

@@ -5,6 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { router, useFocusEffect } from "expo-router";
 import { auth } from "@/lib/firebase";
 import { api, authHeaders } from "@/lib/api";
+import { useAuth } from "@/app/context/AuthContext";
 import ProfileAthlete from "./profile";
 import ProfileCoach from "./profile-coach";
 
@@ -174,6 +175,7 @@ const localUriToDataUrl = async (localUri: string): Promise<string> => {
 };
 
 const Index = () => {
+  const { logout } = useAuth();
   const [profile, setProfile] = useState<ProfileState | null>(null);
   const [loading, setLoading] = useState(true);
   const [updatingName, setUpdatingName] = useState(false);
@@ -335,7 +337,7 @@ const Index = () => {
   );
 
   const handleUpdateProfileImage = useCallback(
-    async (localUri: string) => {
+    async (localUri: string | null) => {
       if (!profile || updatingImage) {
         return;
       }
@@ -346,15 +348,27 @@ const Index = () => {
 
       try {
         const token = await getAuthToken();
-        const dataUrl = await localUriToDataUrl(localUri);
 
-        await api.put(
-          "/api/user/profile",
-          { profilePicture: dataUrl },
-          { headers: await authHeaders(token) },
-        );
+        if (localUri === null) {
+          await api.put(
+            "/api/user/profile",
+            { profilePicture: null },
+            { headers: await authHeaders(token) },
+          );
 
-        setProfile((prev) => (prev ? { ...prev, profileImage: dataUrl } : prev));
+          setProfile((prev) => (prev ? { ...prev, profileImage: null } : prev));
+        } else {
+          const dataUrl = await localUriToDataUrl(localUri);
+
+          await api.put(
+            "/api/user/profile",
+            { profilePicture: dataUrl },
+            { headers: await authHeaders(token) },
+          );
+
+          setProfile((prev) => (prev ? { ...prev, profileImage: dataUrl } : prev));
+        }
+
         setErrorMessage(null);
       } catch (error) {
         setProfile((prev) => (prev ? { ...prev, profileImage: previousImage } : prev));
@@ -415,6 +429,7 @@ const Index = () => {
             onUpdateName={handleUpdateName}
             onUpdatePlayers={handleUpdatePlayers}
             onUpdateProfileImage={handleUpdateProfileImage}
+            onLogout={logout}
             isSavingName={updatingName}
             isSavingImage={updatingImage}
           />
@@ -425,10 +440,17 @@ const Index = () => {
               name: profile.name,
             }}
             profileImage={profile.profileImage}
+            data={{
+              role: "Athlete",
+              name: profile.name,
+            }}
+            profileImage={profile.profileImage}
             onPressSessions={() => router.push("/(screens)/(profile)/sessions")}
             onUpdateName={handleUpdateName}
             onUpdateProfileImage={handleUpdateProfileImage}
+            onUpdateProfileImage={handleUpdateProfileImage}
             isSavingName={updatingName}
+            isSavingImage={updatingImage}
             isSavingImage={updatingImage}
           />
         )}

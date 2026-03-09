@@ -20,12 +20,12 @@ interface ProfileAthleteProps {
   profileImage?: string | null;
   onPressSessions: () => void;
   onUpdateName: (name: string) => Promise<void>;
-  onUpdateProfileImage: (localUri: string) => Promise<void>;
+  onUpdateProfileImage: (localUri: string | null) => Promise<void>;
   isSavingName?: boolean;
   isSavingImage?: boolean;
 }
 
-const fallbackProfileImage = require("../../../assets/Profile/Fallback_A.jpg");
+const fallbackProfileImage = require("../../../assets/Profile/fallback_Athlete.jpg");
 
 // --- SHARED HEXAGON BUTTON ---
 const HexButton = ({ title, onPress, color, icon: Icon }: any) => {
@@ -84,7 +84,7 @@ const ProfileAthlete = ({
     <>
       <ScrollView bounces={false} showsVerticalScrollIndicator={false} className="flex-1">
         {/* Header Section */}
-        <View className="h-[400px] w-full relative">
+        <View className="w-full relative" style={{ aspectRatio: 1 }}>
           <Image 
             source={profileImage ? { uri: profileImage } : fallbackProfileImage}
             className="w-full h-full"
@@ -151,9 +151,9 @@ const ProfileAthlete = ({
       <Modal visible={isEditVisible} transparent animationType="slide">
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} className="flex-1">
           <TouchableOpacity className="flex-1 justify-center items-center bg-black/50 px-6" activeOpacity={1} onPress={() => setIsEditVisible(false)}>
-            <View className=" w-full rounded-[35px] p-8 shadow-2xl items-center">
-              <Text className="font-bebas text-2xl font-black mb-6 italic uppercase">EDIT ATHLETE NAME</Text>
-              <TextInput value={nameInput} onChangeText={setNameInput} className="border-2 border-[#F8FE11] rounded-2xl w-full p-4 text-center uppercase text-lg font-bold" autoFocus />
+            <View className=" w-full rounded-[35px] p-8 shadow-2xl items-center bg-white">
+              <Text className="font-bebas text-2xl font-black mb-6 italic uppercase">EDIT NAME</Text>
+              <TextInput value={nameInput} onChangeText={setNameInput} className="border-2 border-neutral-200 rounded-2xl w-full p-4 text-center uppercase text-lg font-bold" autoFocus />
               <View className="w-full mt-6">
                 
                 <HexButton
@@ -171,8 +171,12 @@ const ProfileAthlete = ({
       <ImagePickerSheet
         visible={sheetVisible}
         onClose={() => setSheetVisible(false)}
+        canRemoveImage={!!profileImage}
         onImageSelected={(uri) => {
           void onUpdateProfileImage(uri);
+        }}
+        onRemoveImage={() => {
+          void onUpdateProfileImage(null);
         }}
       />
     </>

@@ -24,12 +24,13 @@ interface ProfileCoachProps {
   onPressPlayer: () => void;
   onUpdateName: (name: string) => Promise<void>; //Update name
   onUpdatePlayers: (players: Player[]) => Promise<void>; //Update players list
-  onUpdateProfileImage: (localUri: string) => Promise<void>;
+  onUpdateProfileImage: (localUri: string | null) => Promise<void>;
+  onLogout: () => Promise<void>;
   isSavingName?: boolean;
   isSavingImage?: boolean;
 }
 
-const fallbackProfileImage = require("../../../assets/Profile/Fallback_C.jpg");
+const fallbackProfileImage = require("../../../assets/Profile/fallback_Coach.jpg");
 //Hexbutton
 const HexButton = ({ title, onPress, color, icon: Icon }: any) => {
   const pointSize = 24;
@@ -41,15 +42,7 @@ const HexButton = ({ title, onPress, color, icon: Icon }: any) => {
     >
       <View className="flex-row items-center justify-center">
         <View
-          style={{
-            width: 0,
-            height: 0,
-            borderTopWidth: pointSize,
-            borderTopColor: "transparent",
-            borderBottomWidth: pointSize,
-            borderBottomColor: "transparent",
-            borderRightWidth: pointSize,
-            borderRightColor: color,
+          style={{ width: 0, height: 0, borderTopWidth: pointSize, borderTopColor: "transparent", borderBottomWidth: pointSize, borderBottomColor: "transparent", borderRightWidth: pointSize, borderRightColor: color,
           }}
         />
         <View
@@ -67,14 +60,7 @@ const HexButton = ({ title, onPress, color, icon: Icon }: any) => {
         </View>
         <View
           style={{
-            width: 0,
-            height: 0,
-            borderTopWidth: pointSize,
-            borderTopColor: "transparent",
-            borderBottomWidth: pointSize,
-            borderBottomColor: "transparent",
-            borderLeftWidth: pointSize,
-            borderLeftColor: color,
+            width: 0, height: 0, borderTopWidth: pointSize, borderTopColor: "transparent", borderBottomWidth: pointSize, borderBottomColor: "transparent", borderLeftWidth: pointSize, borderLeftColor: color,
           }}
         />
       </View>
@@ -162,7 +148,7 @@ const ProfileCoach = ({
         showsVerticalScrollIndicator={false}
         className="flex-1 bg-primary"
       >
-        <View className="h-[400px] w-full relative">
+        <View className="w-full relative" style={{ aspectRatio: 1 }}>
           <Image
             source={
               profileImage
@@ -262,8 +248,12 @@ const ProfileCoach = ({
         <ImagePickerSheet
           visible={sheetVisible}
           onClose={() => setSheetVisible(false)}
+          canRemoveImage={!!profileImage}
           onImageSelected={(uri) => {
             void onUpdateProfileImage(uri);
+          }}
+          onRemoveImage={() => {
+            void onUpdateProfileImage(null);
           }}
         />
       )}
@@ -294,7 +284,7 @@ const ProfileCoach = ({
         </TouchableOpacity>
       </Modal>
 
-            {/* Edit Name Modal */}
+        {/* Edit Name Modal */}
       <Modal visible={isEditVisible} transparent animationType="slide">
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -307,12 +297,12 @@ const ProfileCoach = ({
           >
             <View className="w-full rounded-[35px] p-8 shadow-2xl items-center bg-white">
               <Text className="font-bebas text-2xl font-black mb-6 italic uppercase">
-                EDIT COACH NAME
+                EDIT NAME
               </Text>
               <TextInput
                 value={nameInput}
                 onChangeText={setNameInput}
-                className="border border-[#F8FE11] rounded-2xl w-full p-4 text-center uppercase text-lg font-bold"
+                className="border border-neutral-200 rounded-2xl w-full p-2 text-center uppercase text-lg font-bold"
                 autoFocus
               />
               <View className="w-full mt-6">
@@ -332,6 +322,7 @@ const ProfileCoach = ({
         </KeyboardAvoidingView>
       </Modal>
 
+      {/* Add Player Modal */}        
       <Modal visible={isAddPlayerVisible} transparent animationType="fade">
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -343,18 +334,18 @@ const ProfileCoach = ({
             onPress={() => setIsAddPlayerVisible(false)}
           >
             <View className="w-full rounded-[35px] p-8 shadow-2xl items-center bg-white">
-              <Text className="font-bebas text-2xl font-black mb-6 italic uppercase">
+              <Text className="font-bebas text-3xl text-primary-dark mb-6 uppercase">
                 ADD PLAYER
               </Text>
               <TextInput
                 value={playerNameInput}
                 onChangeText={setPlayerNameInput}
-                placeholder="PLAYER NAME"
+                placeholder="Player Name"
                 placeholderTextColor="#ADABAB"
-                className="border border-[#F8FE11] rounded-2xl w-full p-8 text-center  text-lg font-bold"
+                className="border border-neutral-200 rounded-xl w-full p-2 text-center font-abeezee text-lg font-base"
                 autoFocus
               />
-              <View className="w-full mt-6">
+              <View className="w-full mt-10">
                 <HexButton
                   title={isSavingPlayers ? "SAVING..." : "ADD"}
                   color="#F8FE11"
