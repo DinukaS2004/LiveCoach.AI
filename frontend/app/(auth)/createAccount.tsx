@@ -98,6 +98,8 @@ const CreateAccount = () => {
     email: "",
     password: "",
     age: "",
+    weight: "",
+    height: "",
     experienceLevel: "intermediate" as ExperienceLevel,
   });
 
@@ -121,7 +123,12 @@ const CreateAccount = () => {
 
   const isFormValid = () => {
     const ageNum = Number(formData.age);
+    const weightNum = Number(formData.weight);
+    const heightNum = Number(formData.height);
+    
     const validAge = Number.isInteger(ageNum) && ageNum >= 5 && ageNum <= 120;
+    const validWeight = Number.isInteger(weightNum) && weightNum >= 20 && weightNum <= 200;
+    const validHeight = Number.isInteger(heightNum) && heightNum >= 10 && heightNum <= 250;
 
     const { firstName, lastName, email, experienceLevel } = formData;
 
@@ -131,6 +138,8 @@ const CreateAccount = () => {
         emailRegex.test(email) &&
         isPasswordValid &&
         validAge &&
+        validWeight &&
+        validHeight &&
         sports.length > 0 &&
         ["beginner", "intermediate", "advanced", "professional"].includes(
             experienceLevel,
@@ -179,6 +188,14 @@ const CreateAccount = () => {
         athleteData: {
           sport: sportString,
           age: Number(formData.age),
+          weight: {
+            value: Number(formData.weight),
+            unit: "kg",
+          },
+          height: {
+            value: Number(formData.height),
+            unit: "cm",
+          },
           experienceLevel: formData.experienceLevel,
           bio: "",
           goals: [],
@@ -395,6 +412,42 @@ const CreateAccount = () => {
                         }
                         returnKeyType="done"
                     />
+                  </View>
+
+                  <View className="bg-gray-100 rounded-lg px-4 py-4">
+                    <TextInput
+                        placeholder="Weight (kg)"
+                        placeholderTextColor="#D6D5D5"
+                        keyboardType="number-pad"
+                        className="text-base text-primary-dark font-medium"
+                        value={formData.weight}
+                        onChangeText={(val) =>
+                            setFormData({
+                              ...formData,
+                              weight: val.replace(/[^0-9]/g, ""),
+                            })
+                        }
+                        returnKeyType="done"
+                    />
+                    <Text className="absolute right-4 top-8 -mt-30 text-sm font-semibold text-primary-dark">Kg</Text>
+                  </View>
+
+                  <View className="bg-gray-100 rounded-lg px-4 py-4">
+                    <TextInput
+                        placeholder="Height (cm)"
+                        placeholderTextColor="#D6D5D5"
+                        keyboardType="number-pad"
+                        className="text-base text-primary-dark font-medium"
+                        value={formData.height}
+                        onChangeText={(val) =>
+                            setFormData({
+                              ...formData,
+                              height: val.replace(/[^0-9]/g, ""),
+                            })
+                        }
+                        returnKeyType="done"
+                    />
+                    <Text className="absolute right-4 top-8 -mt-30 text-sm font-semibold text-primary-dark">Cm</Text>
                   </View>
 
                   <Text className="text-sm text-neutral-700 mb-2 ml-1">
