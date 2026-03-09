@@ -98,9 +98,15 @@ const updateProfileValidationRules = () => {
 
     body('profilePicture')
       .optional()
-      .isString()
-      .withMessage('Profile picture must be a string')
       .custom((value) => {
+        if (value === null) {
+          return true;
+        }
+
+        if (typeof value !== 'string') {
+          throw new Error('Profile picture must be a string');
+        }
+
         const isHttpUrl = /^https?:\/\//i.test(value);
         const isImageDataUrl = /^data:image\/(png|jpe?g|webp);base64,/i.test(value);
 
@@ -108,10 +114,12 @@ const updateProfileValidationRules = () => {
           throw new Error('Profile picture must be a valid URL or image data URL');
         }
 
+        if (value.length > 8 * 1024 * 1024) {
+          throw new Error('Profile picture payload is too large');
+        }
+
         return true;
       })
-      .isLength({ max: 8 * 1024 * 1024 })
-      .withMessage('Profile picture payload is too large'),
   ];
 };
 
