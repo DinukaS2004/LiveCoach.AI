@@ -17,6 +17,32 @@ const athleteSchema = new mongoose.Schema({
         max: 120,
     },
 
+    weight: {
+        value: {
+            type: Number,
+            required: true,
+            min: 20,
+            max: 200,
+        },
+        unit: {
+            type: String,
+            default: "kg",
+        }
+    },
+
+    height: {
+        value: {
+            type: Number,
+            required: true,
+            min: 10,
+            max: 250,
+        },
+        unit: {
+            type: String,
+            default: "cm",
+        }
+    },
+
     // Current coach (reference to Coach model)
     currentCoach: {
         type: mongoose.Schema.Types.ObjectId,
