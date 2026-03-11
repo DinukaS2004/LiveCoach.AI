@@ -40,6 +40,14 @@ const userSchema = new mongoose.Schema(
             trim: true,
         },
 
+        gender: {
+            type: String,
+            enum: ["male", "female"],
+            required: true,
+            trim: true,
+            lowercase: true,
+        },
+
         // Profile picture URL
         profilePicture: {
             type: String,

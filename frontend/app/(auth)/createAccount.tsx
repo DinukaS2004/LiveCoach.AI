@@ -31,6 +31,8 @@ type ExperienceLevel =
     | "advanced"
     | "professional";
 
+type Gender = "male" | "female";    
+
 const getPasswordChecks = (password: string) => ({
   minLength: password.length >= 8,
   hasUppercase: /[A-Z]/.test(password),
@@ -100,6 +102,7 @@ const CreateAccount = () => {
     age: "",
     weight: "",
     height: "",
+    gender: "male" as Gender,
     experienceLevel: "intermediate" as ExperienceLevel,
   });
 
@@ -130,11 +133,12 @@ const CreateAccount = () => {
     const validWeight = Number.isInteger(weightNum) && weightNum >= 20 && weightNum <= 200;
     const validHeight = Number.isInteger(heightNum) && heightNum >= 10 && heightNum <= 250;
 
-    const { firstName, lastName, email, experienceLevel } = formData;
+    const { firstName, lastName, gender, email, experienceLevel } = formData;
 
     return (
         firstName.trim() !== "" &&
         lastName.trim() !== "" &&
+        ["male", "female"].includes(gender) &&
         emailRegex.test(email) &&
         isPasswordValid &&
         validAge &&
@@ -183,6 +187,7 @@ const CreateAccount = () => {
         email: formData.email.trim(),
         firstName: formData.firstName.trim(),
         lastName: formData.lastName.trim(),
+        gender: formData.gender,
         role: "athlete",
         authProvider: "email",
         athleteData: {
@@ -310,6 +315,35 @@ const CreateAccount = () => {
                         returnKeyType="next"
                     />
                   </View>
+
+                  <View className="mb-2">
+
+  <View className="bg-gray-100 rounded-2xl border border-gray-200 overflow-hidden">
+    <View className="flex-row items-center justify-between px-4 pt-3">
+      <Text className="text-xs uppercase tracking-wide text-neutral-500 font-semibold">
+        Select your gender
+      </Text>
+      <Feather name="chevron-down" size={18} color="#6B7280" />
+    </View>
+
+    <Picker
+      selectedValue={formData.gender}
+      onValueChange={(val) =>
+        setFormData({
+          ...formData,
+          gender: val as Gender,
+        })
+      }
+      style={{
+        color: "#111827",
+        marginTop: -6,
+      }}
+    >
+      <Picker.Item label="Male" value="male" />
+      <Picker.Item label="Female" value="female" />
+    </Picker>
+  </View>
+</View>
 
                   <View className="bg-gray-100 rounded-lg px-4 py-4">
                     <TextInput

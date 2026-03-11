@@ -6,7 +6,7 @@ const logger = require('../utils/logger');
 
 const register = async (req, res, next) => {
     try {
-        const { firebaseUid, email, firstName, lastName, role, athleteData, coachData, authProvider } = req.body;
+        const { firebaseUid, email, firstName, lastName, gender, role, athleteData, coachData, authProvider } = req.body;
 
         logger.info('Registration attempt for:', email);
 
@@ -34,12 +34,21 @@ const register = async (req, res, next) => {
             );
         }
 
+        if (!['male', 'female'].includes((gender || '').toLowerCase())) {
+            return errorResponse(
+                res,
+                400,
+                'Valid gender is required'
+            );  
+        }
+
         // Prepare user data
         const userData = {
             firebaseUid,
             email: email.toLowerCase(),
             firstName,
             lastName,
+            gender: gender.toLowerCase(),
             role,
             authProviders: [authProvider || 'email'],
             isEmailVerified: firebaseUser.data.emailVerified || false,
@@ -91,6 +100,7 @@ const register = async (req, res, next) => {
                 email: result.user.email,
                 firstName: result.user.firstName,
                 lastName: result.user.lastName,
+                gender: result.user.gender,
                 role: result.user.role,
                 isFirstTimeUser: result.user.isFirstTimeUser,
                 isEmailVerified: result.user.isEmailVerified,
@@ -142,6 +152,7 @@ const login = async (req, res, next) => {
             email: user.email,
             firstName: result.user.firstName,
             lastName: result.user.lastName,
+            gender: result.user.gender,
             role: user.role,
             profilePicture: user.profilePicture,
             isFirstTimeUser: user.isFirstTimeUser,

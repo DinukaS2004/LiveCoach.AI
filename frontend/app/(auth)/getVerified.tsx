@@ -25,6 +25,7 @@ import SuccessAlert from "../components/SuccessAlert";
 import { useAuth } from "@/app/context/AuthContext";
 
 type CoachSport = "Badminton" | "Cricket";
+type Gender = "male" | "female";
 
 const getVerified = () => {
   const router = useRouter();
@@ -42,10 +43,11 @@ const getVerified = () => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
+    gender: "male" as Gender,
     email: "",
     password: "",
-    nic: "", // ✅ store NIC correctly
-    yearsOfExperience: "", // ✅ required by backend
+    nic: "", 
+    yearsOfExperience: "", 
   });
 
   const emailRegex = useMemo(() => /\S+@\S+\.\S+/, []);
@@ -56,7 +58,7 @@ const getVerified = () => {
   const nicRegex = useMemo(() => /^.{10,}$/, []); // simple: at least 10 chars
 
   const isFormValid = () => {
-    const { firstName, lastName, email, password, nic, yearsOfExperience } =
+    const { firstName, lastName, gender, email, password, nic, yearsOfExperience } =
       formData;
 
     const yearsNum = Number(yearsOfExperience);
@@ -66,6 +68,7 @@ const getVerified = () => {
     return (
       firstName.trim() !== "" &&
       lastName.trim() !== "" &&
+      ["male", "female"].includes(gender) &&
       emailRegex.test(email) &&
       passwordRegex.test(password) &&
       nicRegex.test(nic.trim()) &&
@@ -109,15 +112,16 @@ const getVerified = () => {
           email: formData.email.trim(),
           firstName: formData.firstName.trim(),
           lastName: formData.lastName.trim(),
+          gender: formData.gender,
           role: "coach",
           authProvider: "email",
           coachData: {
-            specialization: [sport], // ✅ only ONE sport
+            specialization: [sport],
             yearsOfExperience: Number(formData.yearsOfExperience),
             nic: formData.nic.trim(), // ✅
             certifications: [], // optional, safe
             bio: "", // optional
-            // You can later send uploaded files URLs here
+            
           },
         },
         { headers: await authHeaders(token) },
@@ -221,6 +225,38 @@ const getVerified = () => {
                 }
               />
             </View>
+
+            <View className="mb-2">
+  <Text className="text-sm text-neutral-700 mb-2 ml-1 font-medium">
+    Gender
+  </Text>
+
+  <View className="bg-gray-100 rounded-2xl border border-gray-200 overflow-hidden">
+    <View className="flex-row items-center justify-between px-4 pt-3">
+      <Text className="text-xs uppercase tracking-wide text-neutral-500 font-semibold">
+        Select your gender
+      </Text>
+      <Feather name="chevron-down" size={18} color="#6B7280" />
+    </View>
+
+    <Picker
+      selectedValue={formData.gender}
+      onValueChange={(val) =>
+        setFormData({
+          ...formData,
+          gender: val as Gender,
+        })
+      }
+      style={{
+        color: "#111827",
+        marginTop: -6,
+      }}
+    >
+      <Picker.Item label="Male" value="male" />
+      <Picker.Item label="Female" value="female" />
+    </Picker>
+  </View>
+</View>
 
             {/* ✅ Coach Sport dropdown (single select) */}
             <View className="bg-gray-100 rounded-lg overflow-hidden">
