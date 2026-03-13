@@ -1,9 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, SafeAreaView, Modal } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, SafeAreaView, Modal, ActivityIndicator } from 'react-native';
 import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { auth } from '../../../lib/firebase';
 import { router } from "expo-router";
 import { authHeaders } from "@/lib/api";
+import AnalyticsCard, { AnalyticsData } from '../(videoAnalyze)/AnalyticsCard';
+import { getAnalysisById } from '@/lib/analyzeApi';
 
 // Base API URL
 const BASE = process.env.EXPO_PUBLIC_API_BASE_URL;
@@ -37,6 +39,62 @@ interface AnalysisItem {
   timestamp?: string;
 }
 
+
+interface AnalysisDetail {
+  score?: number;
+  performanceLevel?: string;
+  distanceToExpert?: number;
+  avgSimilarity?: number;
+  maxSimilarity?: number;
+  framesAnalyzed?: number;
+  feedback?: string;
+  improvements?: string;
+  aiFeedbackEnabled?: boolean;
+}
+
+const parseImprovements = (raw?: string): string[] => {
+  if (!raw) return [];
+  return raw
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0);
+};
+
+const toAnalyticsData = (data: AnalysisDetail): AnalyticsData => {
+  const avgSimilarityText =
+    typeof data.avgSimilarity === 'number'
+      ? `${(data.avgSimilarity * 100).toFixed(1)}%`
+      : 'N/A';
+  const maxSimilarityText =
+    typeof data.maxSimilarity === 'number'
+      ? `${(data.maxSimilarity * 100).toFixed(1)}%`
+      : 'N/A';
+
+  return {
+    overallScore: typeof data.score === 'number' ? data.score : 0,
+    maxScore: 100,
+    overallFeedback: data.feedback
+      ? undefined
+      : `Performance level: ${data.performanceLevel || 'N/A'}. Distance to expert: ${
+          typeof data.distanceToExpert === 'number'
+            ? data.distanceToExpert.toFixed(2)
+            : 'N/A'
+        }`,
+    feedbackPositive: data.feedback
+      ? []
+      : [
+          `Maximum similarity achieved: ${maxSimilarityText}`,
+          `Average similarity: ${avgSimilarityText}`,
+          `Frames analyzed: ${data.framesAnalyzed ?? 'N/A'}`,
+        ],
+    feedbackNegative: [],
+    recommendations: [],
+    aiFeedback: data.feedback || undefined,
+    aiImprovements: parseImprovements(data.improvements),
+    aiFeedbackEnabled: data.aiFeedbackEnabled ?? false,
+  };
+};
+
 const PrograssChart: React.FC<PrograssChartProps> = ({ onBackPress }) => {
   
   // Get today's actual date
@@ -51,6 +109,11 @@ const PrograssChart: React.FC<PrograssChartProps> = ({ onBackPress }) => {
   const [analysesByDate, setAnalysesByDate] = useState<Record<string, AnalysisItem[]>>({});
   const [selectedDateKey, setSelectedDateKey] = useState<string | null>(null);
   const [isAnalysisModalVisible, setIsAnalysisModalVisible] = useState(false);
+  const [isAnalysisDetailModalVisible, setIsAnalysisDetailModalVisible] = useState(false);
+  const [isLoadingAnalysisDetail, setIsLoadingAnalysisDetail] = useState(false);
+  const [analysisDetailError, setAnalysisDetailError] = useState<string | null>(null);
+  const [selectedAnalysisTitle, setSelectedAnalysisTitle] = useState<string>('');
+  const [selectedAnalyticsData, setSelectedAnalyticsData] = useState<AnalyticsData | null>(null);
   const [isNavigatingBack, setIsNavigatingBack] = useState(false);
   const activeDateSet = useMemo(() => new Set(activeDates), [activeDates]);
   const selectedDayAnalyses = useMemo(
@@ -130,6 +193,56 @@ const PrograssChart: React.FC<PrograssChartProps> = ({ onBackPress }) => {
     };
   }, []);
 
+  const handleAnalysisPress = async (analysis: AnalysisItem) => {
+    const analysisId = analysis.id;
+    if (!analysisId) return;
+
+    const displayShot = analysis.shotDisplayName || analysis.shot || 'Shot';
+    const displaySport = analysis.sport || 'Sport';
+    const displayTime = formatAnalysisTime(analysis.timestamp);
+
+    setSelectedAnalysisTitle(
+      `${displaySport.toUpperCase()} - ${displayShot}${displayTime ? ` (${displayTime})` : ''}`,
+    );
+    setSelectedAnalyticsData(null);
+    setAnalysisDetailError(null);
+    setIsLoadingAnalysisDetail(true);
+    setIsAnalysisModalVisible(false);
+    setIsAnalysisDetailModalVisible(true);
+
+    try {
+      const idToken = await auth.currentUser?.getIdToken();
+
+      if (!idToken) {
+        throw new Error('Unable to authorize request.');
+      }
+
+      const response = await getAnalysisById(analysisId, idToken);
+      const detail = response?.data as AnalysisDetail | undefined;
+
+      if (!detail) {
+        throw new Error('Analysis details not found.');
+      }
+
+      setSelectedAnalyticsData(toAnalyticsData(detail));
+    } catch (error) {
+      console.error('Failed to load analysis detail:', error);
+      setAnalysisDetailError('Failed to load analysis details. Please try again.');
+    } finally {
+      setIsLoadingAnalysisDetail(false);
+    }
+  };
+
+  const closeAnalysisListModal = () => {
+    setIsAnalysisModalVisible(false);
+    setSelectedDateKey(null);
+  };
+
+  const closeAnalysisDetailModal = () => {
+    setIsAnalysisDetailModalVisible(false);
+    setSelectedDateKey(null);
+  };
+
   const renderCalendarDays = (monthIndex: number) => {
     const daysInMonth = new Date(selectedYear, monthIndex + 1, 0).getDate();
     const startDay = new Date(selectedYear, monthIndex, 1).getDay();
@@ -158,7 +271,7 @@ const PrograssChart: React.FC<PrograssChartProps> = ({ onBackPress }) => {
             const dateKey = toDateKey(selectedYear, monthIndex, day);
             const isToday = selectedYear === actualYear && monthIndex === actualMonth && day === actualDay;
             const isWorkDay = activeDateSet.has(dateKey);
-            const isSelectedDay = selectedDateKey === dateKey;
+            const isSelectedDay = selectedDateKey === dateKey && isAnalysisModalVisible;
 
             return (
               <TouchableOpacity
@@ -176,8 +289,8 @@ const PrograssChart: React.FC<PrograssChartProps> = ({ onBackPress }) => {
                 <View 
                   className={`w-full h-full items-center justify-center rounded-full
                     ${isWorkDay ? 'bg-accent-yellow' : ''} 
-                    ${isToday && !isWorkDay ? 'border border-[#FF4081]' : ''}
-                    ${isSelectedDay ? 'border border-[#150000]' : ''}
+                    ${isSelectedDay && !isToday ? 'border border-[#150000]' : ''}
+                    ${isToday ? 'border border-[#FF4081]' : ''}
                   `}
                 >
                   <Text 
@@ -199,7 +312,7 @@ const PrograssChart: React.FC<PrograssChartProps> = ({ onBackPress }) => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-neutral-50">
       {/* Top Header */}
       <View className="flex-row items-center px-6 py-4">
         <TouchableOpacity onPress={handleBack}>
@@ -233,7 +346,7 @@ const PrograssChart: React.FC<PrograssChartProps> = ({ onBackPress }) => {
           </TouchableOpacity>
         </View>
 
-        <Text className="text-center text-base text-neutral-500 mb-6 font-manrope">
+        <Text className="text-center font-semibold text-neutral-600 mb-6 font-manrope">
           Tap a highlighted date to view that day's analyses.
         </Text>
 
@@ -262,12 +375,13 @@ const PrograssChart: React.FC<PrograssChartProps> = ({ onBackPress }) => {
 
         <View className="h-20" />
       </ScrollView>
-
+      
+      {/* Analysis List Modal */}
       <Modal
         visible={isAnalysisModalVisible}
         transparent
         animationType="fade"
-        onRequestClose={() => setIsAnalysisModalVisible(false)}
+        onRequestClose={closeAnalysisListModal}
       >
         <View
           className="flex-1 items-center justify-center"
@@ -289,7 +403,7 @@ const PrograssChart: React.FC<PrograssChartProps> = ({ onBackPress }) => {
               </View>
 
               <TouchableOpacity
-                onPress={() => setIsAnalysisModalVisible(false)}
+                onPress={closeAnalysisListModal}
                 className="rounded-full border border-neutral-300 px-3 py-1"
               >
                 <Text className="font-manrope text-xs text-primary-dark">CLOSE</Text>
@@ -312,9 +426,11 @@ const PrograssChart: React.FC<PrograssChartProps> = ({ onBackPress }) => {
                   const displayTime = formatAnalysisTime(analysis.timestamp);
 
                   return (
-                    <View
+                    <TouchableOpacity
                       key={analysis.id || `${selectedDateKey}-${index}`}
                       className="mb-2 bg-primary-light rounded-xl border border-neutral-200 p-3"
+                      activeOpacity={0.8}
+                      onPress={() => handleAnalysisPress(analysis)}
                     >
                       <Text className="text-sm font-semibold text-black">
                         {displaySport.toUpperCase()} - {displayShot}
@@ -324,7 +440,7 @@ const PrograssChart: React.FC<PrograssChartProps> = ({ onBackPress }) => {
                         {analysis.performanceLevel ? ` | Level: ${analysis.performanceLevel}` : ''}
                         {displayTime ? ` | Time: ${displayTime}` : ''}
                       </Text>
-                    </View>
+                    </TouchableOpacity>
                   );
                 })}
                 </ScrollView>
@@ -332,6 +448,50 @@ const PrograssChart: React.FC<PrograssChartProps> = ({ onBackPress }) => {
             </View>
           </View>
         </View>
+      </Modal>
+      
+      {/* Analysis Detail Modal */}
+      <Modal
+        visible={isAnalysisDetailModalVisible}
+        animationType="slide"
+        onRequestClose={closeAnalysisDetailModal}
+      >
+        <SafeAreaView className="flex-1 bg-primary-light">
+          <View className="flex-row items-center justify-between px-4 py-3 border-b border-neutral-300 bg-white">
+            <View className="flex-1 pr-3">
+              <Text className="font-bebas text-3xl text-primary-dark">ANALYSIS DETAILS</Text>
+              <Text className="font-manrope text-xs text-neutral-700">{selectedAnalysisTitle}</Text>
+            </View>
+
+            <TouchableOpacity
+              onPress={closeAnalysisDetailModal}
+              className="rounded-full border border-neutral-300 px-3 py-1"
+            >
+              <Text className="font-manrope text-xs text-primary-dark">CLOSE</Text>
+            </TouchableOpacity>
+          </View>
+
+          {isLoadingAnalysisDetail ? (
+            <View className="flex-1 items-center justify-center">
+              <ActivityIndicator size="large" color="#000000" />
+              <Text className="mt-3 font-manrope text-sm text-neutral-600">Loading analysis...</Text>
+            </View>
+          ) : analysisDetailError ? (
+            <View className="flex-1 items-center justify-center px-6">
+              <Text className="font-manrope text-center text-sm text-red-600">{analysisDetailError}</Text>
+            </View>
+          ) : selectedAnalyticsData ? (
+            <ScrollView className="px-4" contentContainerStyle={{ paddingBottom: 24 }}>
+              <AnalyticsCard data={selectedAnalyticsData} />
+            </ScrollView>
+          ) : (
+            <View className="flex-1 items-center justify-center px-6">
+              <Text className="font-manrope text-center text-sm text-neutral-600">
+                No analysis data available.
+              </Text>
+            </View>
+          )}
+        </SafeAreaView>
       </Modal>
     </SafeAreaView>
   );
