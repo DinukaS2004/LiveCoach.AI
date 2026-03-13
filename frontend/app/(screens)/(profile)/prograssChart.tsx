@@ -6,7 +6,7 @@ import { router } from "expo-router";
 import { authHeaders } from "@/lib/api";
 
 // Base API URL
-const BASE = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:3000';
+const BASE = process.env.EXPO_PUBLIC_API_BASE_URL;
 
 // format as the backend: YYYY-MM-DD.
 const toDateKey = (year: number, monthIndex: number, day: number) => {
@@ -85,7 +85,7 @@ const PrograssChart: React.FC<PrograssChartProps> = ({ onBackPress }) => {
           throw new Error('Unable to authorize request.');
         }
 
-        const response = await fetch(`${BASE}/api/progress/my-sessions`, {
+        const response = await fetch(`${BASE}api/progress/my-sessions`, {
           method: 'GET',
           headers: await authHeaders(idToken),
         });
