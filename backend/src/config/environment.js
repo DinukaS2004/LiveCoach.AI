@@ -8,8 +8,16 @@ const config = {
     // Database
     mongoUri: process.env.MONGODB_URI || 'mongodb://localhost:27017/coaching-app',
 
-    // Firebase
-    firebaseServiceAccountPath: process.env.FIREBASE_SERVICE_ACCOUNT_PATH,
+    // Firebase Admin SDK credentials (loaded from environment variables)
+    firebase: {
+        projectId: process.env.FIREBASE_PROJECT_ID,
+        privateKeyId: process.env.FIREBASE_PRIVATE_KEY_ID,
+        // Replace escaped newlines so the key is correctly formatted at runtime
+        privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+        clientId: process.env.FIREBASE_CLIENT_ID,
+        clientX509CertUrl: process.env.FIREBASE_CLIENT_X509_CERT_URL,
+    },
 
     // CORS
     frontendUrl: process.env.FRONTEND_URL || 'http://localhost:8081',
@@ -21,12 +29,14 @@ const config = {
 // Validate required environment variables
 const requiredEnvVars = [
     'MONGODB_URI',
-    'FIREBASE_SERVICE_ACCOUNT_PATH'
+    'FIREBASE_PROJECT_ID',
+    'FIREBASE_PRIVATE_KEY',
+    'FIREBASE_CLIENT_EMAIL',
 ];
 
 requiredEnvVars.forEach((varName) => {
     if (!process.env[varName]) {
-        console.error(`Error: ${varName} is not defined in .env file`);
+        console.error(`Error: ${varName} is not defined in environment`);
         process.exit(1);
     }
 });
