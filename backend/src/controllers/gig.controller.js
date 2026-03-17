@@ -31,17 +31,6 @@ const createGig = async (req, res, next) => {
     }
 };
 
-// const getAllGigs = async (req, res, next) => {
-//     try {
-//         // ADDED '_id' to the populate selection string
-//         const gigs = await Gig.find().populate('coachId', 'firstName lastName email');
-        
-//         return successResponse(res, 200, 'Gigs retrieved successfully', gigs);
-//     } catch (error) {
-//         next(error);
-//     }
-// };
-
 const getAllGigs = async (req, res, next) => {
     try {
         // Use object syntax for populate to ensure _id is included
