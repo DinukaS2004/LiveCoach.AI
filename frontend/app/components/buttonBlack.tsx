@@ -19,7 +19,7 @@ export default function ButtonBlack({title, onPress}: ButtonProps) {
 
             {/* Center Body (flex-1 ensures it fills the w-full) */}
             <View className="flex-1 h-[52px] bg-primary-dark justify-center items-center">
-                <Text className="text-white text-base font-bebas uppercase">
+                <Text className="text-white text-2xl font-bebas uppercase">
                     {title}
                 </Text>
             </View>

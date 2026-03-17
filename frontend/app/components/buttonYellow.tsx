@@ -19,7 +19,7 @@ export default function ButtonYellow({title, onPress}: ButtonProps) {
 
             {/* Center Body (flex-1 ensures it fills the w-full) */}
             <View className="flex-1 h-[52px] bg-accent-yellow justify-center items-center">
-                <Text className="text-center font-bebas tracking-widest text-black text-lg">
+                <Text className="text-center text-2xl font-bebas tracking-widest text-black">
                     {title}
                 </Text>
             </View>

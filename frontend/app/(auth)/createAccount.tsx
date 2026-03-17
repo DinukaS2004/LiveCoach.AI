@@ -265,7 +265,7 @@ const CreateAccount = () => {
             >
               <View className="bg-accent-yellow w-full h-80 relative overflow-hidden pt-14 pb-8 px-6">
                 <View className="absolute right-0 top-48 opacity-10 overflow-hidden pointer-events-none">
-                  <Text className="text-[115px] font-bebas font-bold text-primary-dark leading-none tracking-tighter">
+                  <Text className="text-[115px] font-bebas text-primary-dark leading-none tracking-tighter">
                     JOIN
                   </Text>
                 </View>
@@ -279,7 +279,7 @@ const CreateAccount = () => {
                 </View>
 
                 <View className="w-full h-full flex-col justify-start items-start gap-2 mt-10 ml-2">
-                  <Text className="font-bebas text-primary-dark uppercase tracking-tight mb-2">
+                  <Text className="font-bebas text-4xl text-primary-dark uppercase tracking-tight mb-2">
                     Create Account
                   </Text>
                   <Text className="text-zinc-800 text-sm font-semibold leading-5">

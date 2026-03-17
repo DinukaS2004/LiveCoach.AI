@@ -118,7 +118,7 @@ const getVerified = () => {
           coachData: {
             specialization: [sport],
             yearsOfExperience: Number(formData.yearsOfExperience),
-            nic: formData.nic.trim(), // ✅
+            nic: formData.nic.trim(), 
             certifications: [], // optional, safe
             bio: "", // optional
             
@@ -175,8 +175,8 @@ const getVerified = () => {
       >
         {/* --- HEADER SECTION --- */}
         <View className="bg-accent-yellow w-full h-80 relative overflow-hidden pt-14 pb-8 px-6">
-          <View className="absolute right-0 top-48 opacity-10 overflow-hidden pointer-events-none">
-            <Text className="text-[115px] font-bebas font-bold text-primary-dark leading-none tracking-tighter">
+          <View className="absolute right-0 top-44 opacity-10 overflow-hidden pointer-events-none">
+            <Text className="text-[130px] font-bebas text-primary-dark leading-none tracking-tighter">
               VERIFY
             </Text>
           </View>
@@ -189,8 +189,8 @@ const getVerified = () => {
             />
           </View>
 
-          <View className="w-full h-full flex-col  justify-start items-start gap-2 mt-10 ml-2">
-            <Text className="font-bebas text-primary-dark uppercase tracking-tight mb-2">
+          <View className="w-full h-full flex-col  justify-start items-start gap-2 mt-6">
+            <Text className="font-bebas text-4xl text-primary-dark uppercase tracking-tight mb-2">
               Get Verified as a Coach
             </Text>
             <Text className="text-zinc-800 text-sm font-semibold leading-5">
@@ -258,7 +258,6 @@ const getVerified = () => {
   </View>
 </View>
 
-            {/* ✅ Coach Sport dropdown (single select) */}
             <View className="bg-gray-100 rounded-lg overflow-hidden">
               <Text className="text-sm text-neutral-700 mt-3 ml-4 mb-1">
                 Sport (Specialization)
@@ -272,7 +271,6 @@ const getVerified = () => {
               </Picker>
             </View>
 
-            {/* ✅ Years of experience */}
             <View className="bg-gray-100 rounded-lg px-4 py-4">
               <TextInput
                 placeholder="Years of Experience"
