@@ -130,7 +130,7 @@ const AddNoteScreen: React.FC<AddNoteProps> = ({
               {saving ? (
                 <ActivityIndicator size="small" color="#000000" />
               ) : (
-                <Text className="font-bebas text-[#000000] text-2xl font-bold">Done</Text>
+                <Text className="font-bebas text-[#000000] text-2xl">Done</Text>
               )}
             </TouchableOpacity>
           </View>

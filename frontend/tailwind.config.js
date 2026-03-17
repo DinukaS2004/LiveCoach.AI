@@ -6,9 +6,9 @@ module.exports = {
   theme: {
     extend: {
       fontFamily:{
-        abeezee: ["abeezee-regular"],
-        bebas: ["Bebas Neue"],
-        manrope: ["manrope-regular"]
+        abeezee: ["abeezee"],
+        bebas: ["bebas"],
+        manrope: ["manrope"]
       },
 
       colors: {

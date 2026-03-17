@@ -39,7 +39,7 @@ const HexButton = ({ title, onPress, color, icon: Icon }: any) => {
       <View className="flex-row items-center justify-center">
         <View style={{ width: 0, height: 0, borderTopWidth: pointSize, borderTopColor: 'transparent', borderBottomWidth: pointSize, borderBottomColor: 'transparent', borderRightWidth: pointSize, borderRightColor: color }} />
         <View style={{ backgroundColor: color, height: pointSize * 2 }} className="flex-row items-center justify-center px-4 min-w-[200px]">
-          <Text className="font-bebas text-2xl font-black text-black uppercase">{title}</Text>
+          <Text className="font-bebas text-2xl text-black uppercase">{title}</Text>
           {Icon && <View className="ml-3"><Icon size={20} color="black" strokeWidth={2.5} /></View>}
         </View>
         <View style={{ width: 0, height: 0, borderTopWidth: pointSize, borderTopColor: 'transparent', borderBottomWidth: pointSize, borderBottomColor: 'transparent', borderLeftWidth: pointSize, borderLeftColor: color }} />
@@ -132,7 +132,7 @@ const ProfileAthlete = ({
 
         <View className="mt-1 px-4">
           <Pressable onPress={onPressSessions} className="px-4 py-6 border-b border-neutral-100 flex-row justify-between items-center active:opacity-50">
-            <Text className="text-xl font-manrope text-black uppercase">SESSIONS</Text>
+            <Text className="text-xl font-manrope font-bold text-black uppercase">SESSIONS</Text>
             <ChevronRight size={22} color="#ADABAB" strokeWidth={1.5} />
           </Pressable>
           
@@ -142,7 +142,7 @@ const ProfileAthlete = ({
             }}
             className="px-4 py-6 border-b border-neutral-100 flex-row justify-between items-center active:opacity-50"
           >
-            <Text className="text-xl font-manrope text-black uppercase">PROGRESS CHART</Text>
+            <Text className="text-xl font-manrope font-bold text-black uppercase">PROGRESS CHART</Text>
             <ChevronRight size={22} color="#ADABAB" strokeWidth={1.5} />
           </Pressable>
         </View>
@@ -151,7 +151,7 @@ const ProfileAthlete = ({
       {/* Options Modal */}
       <Modal visible={isOptionsVisible} transparent animationType="fade">
         <TouchableOpacity className="flex-1 justify-center items-center bg-black/60 px-8" activeOpacity={1} onPress={() => setIsOptionsVisible(false)}>
-          <View className="bg-white w-full rounded-[40px] p-10 items-center shadow-2xl">
+          <View className="bg-white font-bebas w-full rounded-[40px] p-10 items-center shadow-2xl">
             <HexButton title="EDIT NAME" color="#F8FE11" icon={RotateCw} onPress={() => { setIsOptionsVisible(false); setIsEditVisible(true); }} />
             {/* LOGOUT BUTTON IS NOW CONNECTED */}
             <HexButton title="LOGOUT" color="#FF3B3B" icon={LogOut} onPress={handleLogout} />

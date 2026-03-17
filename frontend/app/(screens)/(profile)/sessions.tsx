@@ -54,7 +54,7 @@ const HexButton = ({ title, onPress, color, textColor = "black", icon: Icon }: a
           style={{ backgroundColor: color, height: pointSize * 2 }}
           className="flex-row items-center justify-center px-4 min-w-[200px]"
         >
-            <Text className={`font-bebas text-2xl font-black tracking-tighter text-black uppercase`}>
+            <Text className={`font-bebas text-2xl tracking-tighter text-black uppercase`}>
             {title}
           </Text>
           {Icon && <View className="ml-3"><Icon size={22} color="black" strokeWidth={3} /></View>}
@@ -182,7 +182,7 @@ const SessionsScreen: React.FC<SessionsScreenProps> = ({ onBackPress }) => {
         <TouchableOpacity onPress={handleBack} className="p-1">
           <ChevronLeft size={32} color="black" strokeWidth={2.5} />
         </TouchableOpacity>
-        <Text className="font-bebas pt-2 text-4xl font-black tracking-tighter text-black uppercase">
+        <Text className="font-bebas pt-2 text-4xl tracking-tighter text-black uppercase">
           Sessions
         </Text>
       </View>
@@ -280,7 +280,7 @@ const SessionsScreen: React.FC<SessionsScreenProps> = ({ onBackPress }) => {
             onPress={() => setIsAddModalVisible(false)}
           >
             <View className="bg-white w-full rounded-[35px] p-8 shadow-2xl items-center">
-              <Text className="font-abeezee text-2xl font-black mb-6 italic uppercase">
+              <Text className="font-abeezee text-2xl mb-6 italic uppercase">
                 NAME YOUR SESSION
               </Text>
 
@@ -289,7 +289,7 @@ const SessionsScreen: React.FC<SessionsScreenProps> = ({ onBackPress }) => {
                   placeholder="ADD NEW SESSION"
                   value={sessionInput}
                   onChangeText={setSessionInput}
-                  className="text-lg font-bold text-center uppercase"
+                  className="text-lg text-center uppercase"
                   autoFocus
                 />
               </View>

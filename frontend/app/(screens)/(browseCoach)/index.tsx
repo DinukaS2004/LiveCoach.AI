@@ -106,7 +106,7 @@ const Index = () => {
   <SafeAreaView className="flex-1 bg-primary-light">
     {/* Fixed Header Section */}
     <View className="px-4 py-4 pt-6">
-      <Text className="font-bebas text-4xl font-bold text-primary-dark">
+      <Text className="font-bebas text-4xl text-primary-dark">
         COACH GIGS
       </Text>
 
