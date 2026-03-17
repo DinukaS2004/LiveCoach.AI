@@ -26,9 +26,9 @@ class Analyzer:
             max_similarity = torch.max(similarities).item()
             avg_similarity = torch.mean(similarities).item()
         
-        similarity_score = avg_similarity * 100
+        similarity_score = max(0, avg_similarity * 100)
         distance_score = max(0, 100 - distance.item() * 20)
-        overall_score = (similarity_score * 0.7) + (distance_score * 0.3)
+        overall_score = max(0, (similarity_score * 0.7) + (distance_score * 0.3))
         
         performance_level = (
             "Elite" if overall_score >= 90 else

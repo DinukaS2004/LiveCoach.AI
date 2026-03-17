@@ -26,11 +26,10 @@ class GeminiFeedbackService:
 
         genai.configure(api_key=api_key)
         self._model = genai.GenerativeModel(
-            model_name="gemini-1.5-flash",
+            model_name="gemini-2.5-flash",
             generation_config={
                 "temperature": 0.7,
                 "top_p": 0.9,
-                "max_output_tokens": 800,
             },
         )
         self._initialised = True
@@ -210,5 +209,4 @@ Rules:
             ],
         )
 
-        note = f" (AI feedback temporarily unavailable: {error})" if error else ""
-        return {"feedback": feedback + note, "improvements": "\n".join(tips)}
+        return {"feedback": feedback, "improvements": "\n".join(tips)}

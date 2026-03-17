@@ -1,4 +1,4 @@
-import {View, TextInput, ActivityIndicator, Alert} from 'react-native'
+import {View, TextInput, ActivityIndicator, Alert, Text} from 'react-native'
 import React, {useState, useEffect} from 'react'
 import ButtonYellow from '@/app/components/buttonYellow';
 import DropDownPicker from 'react-native-dropdown-picker';
@@ -120,6 +120,17 @@ const Upload = () => {
 
     return (
         <View className="flex-1">
+            {/* Instructions Section */}
+            <View className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+                <Text className="text-black font-semibold text-base mb-3">Video Upload Instructions</Text>
+                <View className="space-y-2">
+                    <Text className="text-black text-sm">• <Text className="font-semibold">Duration:</Text> Keep videos between 5-30 seconds</Text>
+                    <Text className="text-black text-sm">• <Text className="font-semibold">Single Shot:</Text> Video should contain only ONE complete shot</Text>
+                    <Text className="text-black text-sm">• <Text className="font-semibold">Quality:</Text> Use clear, well-lit videos for best analysis</Text>
+                    <Text className="text-black text-sm">• <Text className="font-semibold">Angle:</Text> Capture the full body motion of the player</Text>
+                </View>
+            </View>
+
             {/* Form Fields */}
             <View>
             <TextInput
