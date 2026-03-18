@@ -97,7 +97,7 @@ const SessionsScreen: React.FC<SessionsScreenProps> = ({ onBackPress }) => {
     try {
       setLoading(true);
       const config = await authConfig();
-      const res = await axios.get(`${BASE}/api/session-notes/myNotes`, config);
+      const res = await axios.get(`${BASE}api/session-notes/myNotes`, config);
       setSessions(Array.isArray(res.data?.data) ? res.data.data : []);
     } catch (e: any) {
       Alert.alert("Error", e.message || "Failed to load sessions");
@@ -120,7 +120,7 @@ const SessionsScreen: React.FC<SessionsScreenProps> = ({ onBackPress }) => {
 
     try {
       const config = await authConfig();
-      await axios.delete(`${BASE}/api/session-notes/${selectedSession._id}`, config);
+      await axios.delete(`${BASE}api/session-notes/${selectedSession._id}`, config);
       setIsOptionsVisible(false);
       setSelectedSession(null);
       fetchSessions();
@@ -138,13 +138,13 @@ const SessionsScreen: React.FC<SessionsScreenProps> = ({ onBackPress }) => {
 
       if (isRenameVisible && selectedSession) {
         await axios.put(
-          `${BASE}/api/session-notes/${selectedSession._id}`,
+          `${BASE}api/session-notes/${selectedSession._id}`,
           { title },
           config
         );
       } else {
         const res = await axios.post(
-          `${BASE}/api/session-notes`,
+          `${BASE}api/session-notes`,
           { title, content: " ",sessionDate: new Date().toISOString(), },
           config
         );
