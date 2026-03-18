@@ -32,9 +32,9 @@ const Index = () => {
         try {
           const token = await user.getIdToken();
           // TEMPORARY: print token for Postman
-          console.log("BEARER TOKEN:", token);
+          // console.log("BEARER TOKEN:", token);
           
-          const response = await fetch(`${process.env.EXPO_PUBLIC_API_BASE_URL}/api/user/profile`, {
+          const response = await fetch(`${process.env.EXPO_PUBLIC_API_BASE_URL}api/user/profile`, {
             headers: { 'Authorization': `Bearer ${token}` }
           });
           const result = await response.json();
@@ -50,7 +50,7 @@ const Index = () => {
     fetchData(); 
     return unsubscribe; 
   }, []);
-
+  
   // 2. Fetch all gigs and store them
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -113,6 +113,7 @@ const Index = () => {
       <Text className="font-bebas text-4xl text-primary-dark">
         COACH GIGS
       </Text>
+      
 
       <View className="mt-4">
         <SportTabs value={selectedSport} onSportChange={setSelectedSport} />
