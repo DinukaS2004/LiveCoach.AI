@@ -34,11 +34,18 @@ const requiredEnvVars = [
     'FIREBASE_CLIENT_EMAIL',
 ];
 
+const missingVars = [];
 requiredEnvVars.forEach((varName) => {
     if (!process.env[varName]) {
+        missingVars.push(varName);
         console.error(`Error: ${varName} is not defined in environment`);
-        process.exit(1);
     }
 });
+
+if (missingVars.length > 0) {
+    console.error(`Missing environment variables: ${missingVars.join(', ')}`);
+    console.error('For Vercel deployment, ensure all variables are set in Project Settings > Environment Variables');
+    process.exit(1);
+}
 
 module.exports = config;

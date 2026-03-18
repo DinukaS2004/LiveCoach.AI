@@ -7,6 +7,14 @@ const initializeFirebase = () => {
     try {
         const { projectId, privateKeyId, privateKey, clientEmail, clientId, clientX509CertUrl } = config.firebase;
 
+        // Validate all required credentials are present
+        if (!projectId) throw new Error('FIREBASE_PROJECT_ID is missing');
+        if (!privateKeyId) throw new Error('FIREBASE_PRIVATE_KEY_ID is missing');
+        if (!privateKey) throw new Error('FIREBASE_PRIVATE_KEY is missing');
+        if (!clientEmail) throw new Error('FIREBASE_CLIENT_EMAIL is missing');
+        if (!clientId) throw new Error('FIREBASE_CLIENT_ID is missing');
+        if (!clientX509CertUrl) throw new Error('FIREBASE_CLIENT_X509_CERT_URL is missing');
+
         const serviceAccount = {
             type: 'service_account',
             project_id: projectId,
@@ -26,11 +34,15 @@ const initializeFirebase = () => {
             credential: admin.credential.cert(serviceAccount),
         });
 
-        console.log('Firebase Admin initialized successfully');
+        console.log('✅ Firebase Admin initialized successfully');
 
     } catch (error) {
-        console.error('Firebase Admin initialization error:', error.message);
-        console.error('Make sure all FIREBASE_* environment variables are set correctly');
+        console.error('❌ Firebase Admin initialization error:', error.message);
+        console.error('\n📋 Troubleshooting:');
+        console.error('1. Verify all FIREBASE_* environment variables are set');
+        console.error('2. For Vercel: Go to Project Settings > Environment Variables');
+        console.error('3. Ensure FIREBASE_PRIVATE_KEY contains the full private key with line breaks');
+        console.error('4. Check that there are no extra spaces or quotes in the values');
         process.exit(1);
     }
 };
