@@ -4,8 +4,7 @@ import {
   TouchableOpacity, TextInput, KeyboardAvoidingView, Platform, ActivityIndicator,
 } from "react-native";
 import { MaterialIcons, Entypo } from "@expo/vector-icons";
-import { SlidersHorizontal, RotateCw, LogOut, Pencil, PencilIcon } from "lucide-react-native"; // <--- Imported LogOut
-import { SlidersHorizontal, RotateCw, LogOut, Trash2 } from "lucide-react-native"; 
+import { SlidersHorizontal, RotateCw, LogOut, Trash2, PencilIcon } from "lucide-react-native"; 
 import ImagePickerSheet from "../../components/ImagePickerSheet";
 
 export interface Player {
