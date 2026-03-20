@@ -5,6 +5,8 @@ import {
 } from 'react-native';
 import { 
   ChevronRight, Camera, SlidersHorizontal, 
+  RotateCw, LogOut, 
+  PencilIcon
   RotateCw, LogOut, Trash2 
 } from 'lucide-react-native';
 import { useRouter } from 'expo-router';

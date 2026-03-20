@@ -4,6 +4,7 @@ import {
   TouchableOpacity, TextInput, KeyboardAvoidingView, Platform, ActivityIndicator,
 } from "react-native";
 import { MaterialIcons, Entypo } from "@expo/vector-icons";
+import { SlidersHorizontal, RotateCw, LogOut, Pencil, PencilIcon } from "lucide-react-native"; // <--- Imported LogOut
 import { SlidersHorizontal, RotateCw, LogOut, Trash2 } from "lucide-react-native"; 
 import ImagePickerSheet from "../../components/ImagePickerSheet";
 
@@ -56,6 +57,7 @@ const HexButton = ({ title, onPress, color, icon: Icon, textColor = 'black', ico
           </Text>
           {Icon && (
             <View className="ml-3">
+              <Icon size={20} color={textColor} strokeWidth={2.5} />
               <Icon size={20} color={iconColor} strokeWidth={2.5} />
             </View>
           )}
@@ -305,7 +307,7 @@ const ProfileCoach = ({
             <HexButton
               title="EDIT NAME"
               color="#F8FE11"
-              icon={RotateCw}
+              icon={PencilIcon}
               onPress={() => {
                 setIsOptionsVisible(false);
                 setIsEditVisible(true);
@@ -358,6 +360,7 @@ const ProfileCoach = ({
                 />
                 <HexButton
                   title="CANCEL"
+                  textColor="white"
                   color="#9E9E9E"
                   onPress={() => setIsEditVisible(false)}
                 />
@@ -399,6 +402,7 @@ const ProfileCoach = ({
                 <HexButton
                   title="CANCEL"
                   color="#FF3B3B"
+                  textColor="white"
                   onPress={() => setIsAddPlayerVisible(false)}
                 />
               </View>

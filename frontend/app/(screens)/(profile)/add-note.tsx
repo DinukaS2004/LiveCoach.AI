@@ -32,14 +32,14 @@ async function authConfig() {
 
 async function loadNoteById(noteId: string) {
   const config = await authConfig();
-  const res = await axios.get(`${BASE}/api/session-notes/${noteId}`, config);
+  const res = await axios.get(`${BASE}api/session-notes/${noteId}`, config);
   return res.data?.data || null;
 }
 
 async function updateNote(noteId: string, title: string, content: string) {
   const config = await authConfig();
   return axios.put(
-    `${BASE}/api/session-notes/${noteId}`,
+    `${BASE}api/session-notes/${noteId}`,
     { title, content },
     config,
   );

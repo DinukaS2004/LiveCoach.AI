@@ -13,10 +13,10 @@ exports.create = async (req, res, next) => {
 
 exports.listNotes = async (req, res, next) => {
   try {
-    const data = (req.user.role = await sessionService.listMine(
+    const data = await sessionService.listMine(
       req.user._id,
       req.query,
-    ));
+    );
 
     res.json({ success: true, data });
   
@@ -27,7 +27,7 @@ exports.listNotes = async (req, res, next) => {
 
 exports.getById = async (req, res, next) => {
   try {
-    const note = await sessionService.getByIdForUser(req.params.id, req.user);
+    const note = await sessionService.getByIdForUser(req.params.id, req.user._id);
     res.json({ success: true, data: note });
   
   } catch (e) {

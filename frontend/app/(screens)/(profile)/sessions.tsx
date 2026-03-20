@@ -54,10 +54,10 @@ const HexButton = ({ title, onPress, color, textColor = "black", icon: Icon }: a
           style={{ backgroundColor: color, height: pointSize * 2 }}
           className="flex-row items-center justify-center px-4 min-w-[200px]"
         >
-            <Text className={`font-bebas text-2xl tracking-tighter text-black uppercase`}>
+            <Text className="font-bebas text-2xl tracking-tighter text-black uppercase" style={{ color: textColor }}>
             {title}
           </Text>
-          {Icon && <View className="ml-3"><Icon size={22} color="black" strokeWidth={3} /></View>}
+          {Icon && <View className="ml-3"><Icon color={textColor} size={22} strokeWidth={3} /></View>}
         </View>
 
         {/* Right Triangle Point */}
@@ -264,6 +264,7 @@ const SessionsScreen: React.FC<SessionsScreenProps> = ({ onBackPress }) => {
             <HexButton
               title="DELETE SESSION"
               color="#FF3B3B"
+              textColor="white"
               icon={Trash2}
               onPress={handleDelete}
             />

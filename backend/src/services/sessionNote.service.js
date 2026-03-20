@@ -8,7 +8,7 @@ exports.createNote = async (ownerUserId, payload) => {
     ownerUserId,
     title: payload.title || "",
     content: payload.content,
-    noteDate,
+    sessionDate: noteDate,
   });
 };
 
@@ -21,10 +21,10 @@ exports.listMine = async (ownerUserId, filters = {}) => {
     start.setHours(0, 0, 0, 0);
     const end = new Date(d);
     end.setHours(23, 59, 59, 999);
-    query.noteDate = { $gte: start, $lte: end };
+    query.sessionDate = { $gte: start, $lte: end };
   }
 
-  return await SessionNote.find(query).sort({ noteDate: -1, createdAt: -1 });
+  return await SessionNote.find(query).sort({ sessionDate: -1, createdAt: -1 });
 };
 
 exports.getByIdForUser = async (noteId, ownerUserId) => {
@@ -50,7 +50,7 @@ exports.updateNote = async (noteId, ownerUserId, updates) => {
     note.content = updates.content;
   }  
   
-  if (updates.noteDate) note.noteDate = new Date(updates.noteDate);
+  if (updates.sessionDate) note.sessionDate = new Date(updates.sessionDate);
 
   await note.save();
   return note;
