@@ -34,5 +34,5 @@ if __name__ == "__main__":
         "main:app",
         host=settings.AI_SERVICE_HOST,
         port=settings.AI_SERVICE_PORT,
-        reload=True
+        reload=False
     )
