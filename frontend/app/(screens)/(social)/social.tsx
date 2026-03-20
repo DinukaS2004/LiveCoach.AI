@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 const Social = () => {
     return (
         <View>
-            
+            <Text>Coming Soon</Text>
         </View>
     )
 }
